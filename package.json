@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "name": "todo-app",
+  "description": "Todo App using redux (todo-redux-state) & react (todo-react-components) ",
+  "author": "Baz <baz@thinkloop.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thinkloop/todo-app.git"
+  },
+  "homepage": "https://github.com/thinkloop/todo-app#readme",
+  "bugs": {
+    "url": "https://github.com/thinkloop/todo-app/issues"
+  },
+  "keywords": [
+    "todo",
+    "mvc",
+    "todomvc",
+    "redux"
+  ],
+  "main": "./build/index.html",
+  "scripts": {
+    "************": "",
+    "start": "augur-ui-webserver -d $npm_package_config_build_folder",
+    "watch": "clear; echo '* NPM UPDATE *'; npm update; echo '* CLEAN * HTML * WATCHIFY *'; NODE_ENV=development npm run -s watch:all",
+    "build": "clear; echo '* NPM UPDATE *'; echo '* * * *  BUILD  * * * *'; npm run -s clean; NODE_ENV=production npm run -s build:js",
+    "test": "clear; echo '**** TESTS ****'; jest",
+    "***********": "",
+    "watch:all": "npm run -s clean && (npm run -s watch:js & npm run -s watch:html)",
+    "watch:js": "watchify $npm_package_config_js_entry_file --extension=.js --extension=.jsx -t [ babelify ] --debug -o 'exorcist $npm_package_config_build_folder/$npm_package_version/build.js.map > $npm_package_config_build_folder/$npm_package_version/build.js && echo ---------WATCHIFY--------`date +%r`'",
+    "watch:html": "onchange $npm_package_config_html_entry_file -i -- npm run -s watch:html:do",
+    "watch:html:do": "cat $npm_package_config_html_entry_file | npm run -s partial:replaceBuildFolderString > $npm_package_config_build_folder/index.html && echo ---------HTML-----------`date +%r`",
+    "**********": "",
+    "build:js": "npm run -s build:js:browserify | npm run -s partial:uglify -- > $npm_package_config_build_folder/$npm_package_version/build.js && echo ---------JS-------------`date +%r`",
+    "build:js:browserify": "browserify $npm_package_config_js_entry_file --extension=.js --extension=.jsx -t [ babelify ]",
+    "*********": "",
+    "clean": "rimraf $npm_package_config_build_folder/* && mkdir -p $npm_package_config_build_folder && mkdir -p $npm_package_config_build_folder/$npm_package_version && echo ---------CLEAN----------`date +%r`",
+    "partial:uglify": "[ $NODE_ENV = production ] && uglifyjs --compress drop_console,unused=true --mangle --screw-ie8 || cat",
+    "partial:replaceBuildFolderString": "sed 's~${build_folder}~'$npm_package_version'~g'"
+  },
+  "dependencies": {
+    "memoizerific": "^1.8.4",
+    "todo-react-components": "thinkloop/todo-react-components",
+    "todo-redux-state": "thinkloop/todo-redux-state"
+  },
+  "devDependencies": {
+    "augur-ui-webserver": "^1.1.0",
+    "babel-jest": "^15.0.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-0": "6.5.0",
+    "babelify": "^7.3.0",
+    "browserify": "13.1.0",
+    "exorcist": "^0.4.0",
+    "jest": "^15.1.1",
+    "npm-check-updates": "^2.8.0",
+    "onchange": "^3.0.2",
+    "rimraf": "^2.5.4",
+    "uglifyjs": "^2.4.10",
+    "watchify": "^3.7.0"
+  },
+  "config": {
+    "js_entry_file": "./src/index.js",
+    "html_entry_file": "./src/index.html",
+    "build_folder": "./build"
+  }
+}
