@@ -5,6 +5,7 @@ This project integrates a [todo view layer](https://github.com/thinkloop/todo-re
 import todoReduxState from 'todo-redux-state';
 
 export default function () {
+
 	// get relevant state
 	const { activePage } = todoReduxState.state;
 	
@@ -15,7 +16,7 @@ export default function () {
 
 Whenever that label is needed, the selector is called and the value is returned. If underlying state changes, the selector will return an updated value. Given the same state, the selector will always return the same value.
 
-Sometimes selectors become popular and get called many times between state changes by ui elements, or other selectors. Each time they are called, the computations are re-executed, even if the state has not changed, and the returned values are the same. This does not matter much in our trivial example, but what about a more realistic, heavier use-case, like say, building, filtering, aand sorting the primary array: 
+Sometimes selectors become popular and get called many times between state changes, by ui elements, or other selectors. Each time they are called, the computations are re-executed, even if the state has not changed and the returned values are the same. This does not matter much with our trivial example, but it can matter a lot with a heavier use-case, like say, building, filtering, and sorting the app's primary array: 
 
 ```javascript
 /*
@@ -29,20 +30,20 @@ export default function () {
 	
 	return Object.keys(todos)
 				
-			// convert objects to array
-			.map(key => {
-				return { ...todos[key], id: key };
-			})
-			
-			// filter out those that do noot match search phrase
-			.filter(todo => todo.description.indexOf(searchPhrase))
-			
-			// sort
-			.sort((a, b) => a.createdDate < b.createdDate ? -1 : 1);
+		// convert objects to array
+		.map(key => {
+			return { ...todos[key], id: key };
+		})
+		
+		// filter out those that do noot match search phrase
+		.filter(todo => todo.description.indexOf(searchPhrase))
+		
+		// sort
+		.sort((a, b) => a.createdDate < b.createdDate ? -1 : 1);
 }
 ```
 
-The solution is to use [memoization](https://github.com/thinkloop/memoizerific): returning cached values when functions are called with the same params. The previous example can be rewritten to use memoization like this:
+The solution is to use [memoization](https://github.com/thinkloop/memoizerific): returning cached values if functions are called with the same params. The previous example can be rewritten to use memoization like this:
 
 ```javascript
 /*
@@ -51,12 +52,20 @@ The solution is to use [memoization](https://github.com/thinkloop/memoizerific):
 import memoizerific from 'memoizerific';
 import todoReduxState from 'todo-redux-state';
 
+// default entry point, gathers state and runs memoized function
 export default function () {
+	
+	// get relevant state
 	const { todos, searchPhrase } = todoReduxState.state;
+	
+	// run memoized function
 	return selectTodos(todos, searchPhrase);
 }
 
+// memoized function
 export const selectTodos = memoizerific(1)((todos, searchPhrase) => {
+	
+	// run expensive computation
 	return Object.keys(todos)
       .map(key => {
       	return {
@@ -69,7 +78,7 @@ export const selectTodos = memoizerific(1)((todos, searchPhrase) => {
 });
 ```
 
-In this optimized example, the expensive computations are moved to a separate memoized function that only runs when `todos` or `searchPhrase` have changed, otherwise it returns the cached result. Additionally, since the same reference to the same object is being returned, they can be compared using strict equals, and reduce unnecessary re-renders in react.
+In this optimized example, the expensive computations are moved to a separate memoized function that only runs when `todos` or `searchPhrase` have changed, otherwise it returns a cached result. Additionally, since cached results can be compared using strict equals, they can also be used to minimize unnecessary re-renders in the react ui.
 
 ### Run
 
