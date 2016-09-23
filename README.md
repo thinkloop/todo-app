@@ -1,5 +1,5 @@
 # Todo App (Advanced)
-This project integrates a [todo ui](https://github.com/thinkloop/todo-react-components) and a [todo state container](https://github.com/thinkloop/todo-react-components) to create a functional todo app. 
+This project integrates a [todo ui](https://github.com/thinkloop/todo-react-components) and a [todo state container](https://github.com/todo-redux-state) to create a functional todo app. 
 
 To run it, clone the repo and start the webserver:
 
