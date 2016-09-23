@@ -96,8 +96,8 @@ To run it, clone the repo and start the webserver:
 Released under an MIT license.
 
 ### Related
-1. [todo-react-components](https://github.com/thinkloop/todo-react-components): view-layer
-2. [todo-redux-state](https://github.com/thinkloop/todo-redux-state): data-layer
-3. [todo-app](https://github.com/thinkloop/todo-app): integration
+1. [todo-react-components](https://github.com/thinkloop/todo-react-components) (view-layer)
+2. [todo-redux-state](https://github.com/thinkloop/todo-redux-state) (data-layer)
+3. [todo-app](https://github.com/thinkloop/todo-app) (integration)
 
 ### Like it? Star It
