@@ -1,4 +1,4 @@
-# Todo App (Advanced)
+# Todo App - Integration (Advanced)
 This project integrates a [todo view layer](https://github.com/thinkloop/todo-react-components) and a [todo state container](https://github.com/thinkloop/todo-redux-state) to create a functional todo app. Its primary task is to take flat, normalized, shallow state provided by a redux state container, and transform it into nested, denormalized, hierarchical structures that the view demands. The mechanism by which it does this is called: **selectors**. Selectors are functions that take state (nothing else), and return view-specific structures. For example, the following selector builds a label out of `activePage` state:
 
 ```javascript
