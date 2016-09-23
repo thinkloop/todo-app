@@ -13,7 +13,7 @@ export default function () {
 
 Whenever that label is needed, the selector is called and the value is returned. If underlying state changes, the selector will return an updated value. Given the same state, the selector will always return the same value.
 
-Sometimes selectors become popular and get called many times between state changes by ui elements, or other selectors. Each time they are called, the computations are re-executed, but the values returned are the same, since none of the underlying state has changed between calls. This does not matter much in our trivial example, but what about a more realistic, heavier use-case, like say, building, filtering, aand sorting the primary array: 
+Sometimes selectors become popular and get called many times between state changes by ui elements, or other selectors. Each time they are called, the computations are re-executed, even if the state has not changed, and the returned values are the same. This does not matter much in our trivial example, but what about a more realistic, heavier use-case, like say, building, filtering, aand sorting the primary array: 
 
 ```javascript
 /*
@@ -26,14 +26,17 @@ export default function () {
 	const { todos, searchPhrase } = todoReduxState.state;
 	
 	return Object.keys(todos)
-      .map(key => {
-      	return {
-      		...todos[key],
-      		id: key
-      	};
-      })
-      .filter(todo => todo.description.indexOf(searchPhrase))
-      .sort((a, b) => a.createdDate < b.createdDate ? -1 : 1);
+				
+			// convert objects to array
+			.map(key => {
+				return { ...todos[key], id: key };
+			})
+			
+			// filter out those that do noot match search phrase
+			.filter(todo => todo.description.indexOf(searchPhrase))
+			
+			// sort
+			.sort((a, b) => a.createdDate < b.createdDate ? -1 : 1);
 }
 ```
 
