@@ -5,8 +5,10 @@ This project integrates a [todo view layer](https://github.com/thinkloop/todo-re
 import todoReduxState from 'todo-redux-state';
 
 export default function () {
+	// get relevant state
 	const { activePage } = todoReduxState.state;
 	
+	// generate and return label
 	return `${activePage} is active`;
 }
 ```
