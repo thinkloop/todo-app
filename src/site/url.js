@@ -1,10 +1,10 @@
 import memoizerific from 'memoizerific';
-import todoReduxState from 'todo-redux-state';
+import { state } from 'todo-redux-state';
 
 import * as PATHS from '../site/constants/paths';
 
 export default function () {
-	const { selectedPage } = todoReduxState.state;
+	const { selectedPage } = state;
 	return selectURL(selectedPage, PATHS);
 }
 

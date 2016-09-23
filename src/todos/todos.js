@@ -1,16 +1,17 @@
 import memoizerific from 'memoizerific';
-import todoReduxState from 'todo-redux-state';
+import { state, actions, constants } from 'todo-redux-state';
 
 export default function () {
-	const { todos, selectedSummaryStatus } = todoReduxState.state;
+	const { todos, selectedSummaryStatus } = state;
+
 	return selectTodos(
 		todos,
 		selectedSummaryStatus,
-		todoReduxState.actions.todos.addTodo,
-		todoReduxState.actions.todos.removeTodo,
-		todoReduxState.actions.todos.completeTodo,
-		todoReduxState.actions.todos.updateSelectedSummaryStatus,
-		todoReduxState.constants.TODOS_STATUSES);
+		actions.todos.addTodo,
+		actions.todos.removeTodo,
+		actions.todos.completeTodo,
+		actions.todos.updateSelectedSummaryStatus,
+		constants.TODOS_STATUSES);
 }
 
 export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus, addTodo, removeTodo, completeTodo, updateSelectedSummaryStatus, TODOS_STATUSES) => {

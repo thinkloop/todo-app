@@ -1,15 +1,18 @@
 import memoizerific from 'memoizerific';
-import todoReduxState from 'todo-redux-state';
+import { state, actions, constants } from 'todo-redux-state';
 
 import * as PATHS from '../site/constants/paths';
 
 export default function () {
-	const { selectedPage } = todoReduxState.state;
-	return selectSiteHeader(selectedPage, todoReduxState.actions.site.updateSelectedPage, PATHS, todoReduxState.constants.PAGES.HOME, todoReduxState.constants.PAGES.ABOUT);
+	const { selectedPage } = state;
+	return selectSiteHeader(selectedPage,
+							actions.site.updateSelectedPage,
+							PATHS,
+							constants.PAGES.HOME,
+							constants.PAGES.ABOUT);
 }
 
 export const selectSiteHeader = memoizerific(1)((selectedPage, updateSelectedPage, PATHS, HOME, ABOUT) => {
-
 	return {
 		labelHome: 'Todo App',
 		labelAbout: 'About',
