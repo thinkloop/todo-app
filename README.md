@@ -1,5 +1,5 @@
 # Todo App: Selectors (Integration)
-This project integrates [todo view layer](https://github.com/thinkloop/todo-react-components) and [todo state container](https://github.com/thinkloop/todo-redux-state) to create a functional todo app. Its primary task is to take flat, normalized, shallow state provided by a redux state container, and transform it into nested, denormalized, hierarchical structures that the view demands. The mechanism by which it does this is called: **selectors**. Selectors are functions that take state (nothing else), and return view-specific structures. For example, the following selector builds a label out of `activePage` state:
+This project integrates [todo view layer](https://github.com/thinkloop/todo-react-components) and [todo state container](https://github.com/thinkloop/todo-redux-state) to create a functional todo app. Its primary task is to take flat, normalized, shallow state provided by a redux state container, and transform it into the nested, denormalized, hierarchical structures that the view demands. The mechanism by which it does this is called: **selectors**. Selectors are functions that take state (nothing else), and return view-specific structures. For example, the following selector builds a label out of `activePage` state:
 
 ```javascript
 import todoReduxState from 'todo-redux-state';
@@ -16,7 +16,7 @@ export default function () {
 
 Whenever that label is needed, the selector is called and the value is returned. If underlying state changes, the selector will return an updated value. Given the same state, the selector will always return the same value.
 
-Sometimes selectors become popular and get called many times between state changes, by ui elements, or other selectors. Each time they are called, the computations are re-executed, even if the state has not changed and the returned values are the same. This does not matter much with our trivial example, but it can matter a lot with a heavier use-case, like say, building, filtering, and sorting the app's primary array: 
+Sometimes selectors become popular and get called many times between state changes (by ui elements or other selectors). Every time they are called, they re-run and re-calculate using the same underlying state, returning the same results. With expensive selectors, this can quickly start to degrade the app. A common example would be the selector that returns the app's main list of "things" (todos, books, cars, movies, ...). This often involves transforming, sorting, filtering, and paginating a large set of data - not stuff you want running multiple times a frame:
 
 ```javascript
 /*
@@ -35,15 +35,15 @@ export default function () {
 			return { ...todos[key], id: key };
 		})
 		
-		// filter out those that do noot match search phrase
-		.filter(todo => todo.description.indexOf(searchPhrase))
+		// filter out those that do not match search phrase
+		.filter(todo => todo.description.indexOf(searchPhrase) >= 0)
 		
 		// sort
 		.sort((a, b) => a.createdDate < b.createdDate ? -1 : 1);
 }
 ```
 
-The solution is to use [memoization](https://github.com/thinkloop/memoizerific): returning cached values if functions are called with the same params. The previous example can be rewritten to use memoization like this:
+What is needed is a function cache that returns the same results, given the same arguments - or what is known as [memoization](https://github.com/thinkloop/memoizerific). That way selectors can return values instantly, behaving like static properties. Since they are deterministic and purely based on state, it is very easy to memoize them. The pattern we use looks like this:
 
 ```javascript
 /*
@@ -52,7 +52,7 @@ The solution is to use [memoization](https://github.com/thinkloop/memoizerific):
 import memoizerific from 'memoizerific';
 import todoReduxState from 'todo-redux-state';
 
-// default entry point, gathers state and runs memoized function
+// entry point, gathers state and runs memoized function
 export default function () {
 	
 	// get relevant state
@@ -62,7 +62,7 @@ export default function () {
 	return selectTodos(todos, searchPhrase);
 }
 
-// memoized function
+// memoized function that houses all computation
 export const selectTodos = memoizerific(1)((todos, searchPhrase) => {
 	
 	// run expensive computation
@@ -78,7 +78,7 @@ export const selectTodos = memoizerific(1)((todos, searchPhrase) => {
 });
 ```
 
-In this optimized example, the expensive computations are moved to a separate memoized function that only runs when `todos` or `searchPhrase` have changed, otherwise it returns a cached result. Additionally, since cached results can be compared using strict equals, they can also be used to minimize unnecessary re-renders in the react ui.
+Computations are moved to a separate memoized function that only runs when `todos` or `searchPhrase` have changed, otherwise it instantly returns the cached result. Additionally, since cached results refer to the exact same object, they can be compared cheaply in react using strict equality to minimize re-renders.
 
 ### Run
 
