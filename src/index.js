@@ -5,7 +5,7 @@ import * as PATHS from './site/constants/paths';
 import selectors from './selectors';
 
 // debug stuff
-window.state = state;
+Object.defineProperty(window, "state", { get: () => state });
 window.selectors = selectors;
 window.actions = actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');

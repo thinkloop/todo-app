@@ -36,14 +36,15 @@
   },
   "dependencies": {
     "memoizerific": "^1.8.4",
+    "selectors": "thinkloop/selectors",
     "todo-react-components": "thinkloop/todo-react-components",
     "todo-redux-state": "thinkloop/todo-redux-state"
   },
   "devDependencies": {
     "augur-ui-webserver": "^1.1.0",
     "babel-jest": "^15.0.0",
-    "babel-preset-es2015": "^6.14.0",
-    "babel-preset-stage-0": "6.5.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-stage-0": "6.16.0",
     "babelify": "^7.3.0",
     "browserify": "13.1.0",
     "exorcist": "^0.4.0",

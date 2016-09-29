@@ -1,23 +1,17 @@
 import memoizerific from 'memoizerific';
-import { state, actions, constants } from 'todo-redux-state';
+import { actions, constants } from 'todo-redux-state';
 
-export default function () {
+export default function (state) {
 	const { todos, selectedSummaryStatus } = state;
 
-	return selectTodos(
-		todos,
-		selectedSummaryStatus,
-		actions.todos.addTodo,
-		actions.todos.removeTodo,
-		actions.todos.completeTodo,
-		actions.todos.updateSelectedSummaryStatus,
-		constants.TODOS_STATUSES);
+	return selectTodos(todos, selectedSummaryStatus);
 }
 
-export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus, addTodo, removeTodo, completeTodo, updateSelectedSummaryStatus, TODOS_STATUSES) => {
+export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus) => {
+
 	const newForm = {
 		placeholder: 'What do you need to do?',
-		onSubmit: description => addTodo(description)
+		onSubmit: description => actions.todos.addTodo(description)
 	};
 
 	let list = Object.keys(todos).map(key => {
@@ -25,8 +19,8 @@ export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus, addTod
 			...todos[key],
 			id: key,
 			buttonLabel: 'delete',
-			onButtonClicked: () => removeTodo(key),
-			onCheckboxToggled: () => completeTodo(key, !todos[key].isComplete)
+			onButtonClicked: () => actions.todos.removeTodo(key),
+			onCheckboxToggled: () => actions.todos.completeTodo(key, !todos[key].isComplete)
 		};
 	});
 
@@ -41,7 +35,12 @@ export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus, addTod
 			countTotal: 0
 		});
 
-	list = list.filter(todo => selectedSummaryStatus === TODOS_STATUSES.TOTAL || (selectedSummaryStatus === TODOS_STATUSES.COMPLETE && todo.isComplete)  || (selectedSummaryStatus === TODOS_STATUSES.PENDING && !todo.isComplete))
+	list = list
+		.filter(todo => (
+			selectedSummaryStatus === constants.TODOS_STATUSES.TOTAL ||
+			(selectedSummaryStatus === constants.TODOS_STATUSES.COMPLETE && todo.isComplete)  ||
+			(selectedSummaryStatus === constants.TODOS_STATUSES.PENDING && !todo.isComplete)
+		))
 		.sort((a, b) => {
 			if (a.dateCreated < b.dateCreated) { return -1; }
 			if (a.dateCreated > b.dateCreated) { return 1; }
@@ -55,9 +54,9 @@ export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus, addTod
 
 	summary.selectedSummaryStatus = selectedSummaryStatus;
 
-	summary.onClickPending = () => updateSelectedSummaryStatus(TODOS_STATUSES.PENDING);
-	summary.onClickComplete = () => updateSelectedSummaryStatus(TODOS_STATUSES.COMPLETE);
-	summary.onClickTotal = () => updateSelectedSummaryStatus(TODOS_STATUSES.TOTAL);
+	summary.onClickPending = () => actions.todos.updateSelectedSummaryStatus(constants.TODOS_STATUSES.PENDING);
+	summary.onClickComplete = () => actions.todos.updateSelectedSummaryStatus(constants.TODOS_STATUSES.COMPLETE);
+	summary.onClickTotal = () => actions.todos.updateSelectedSummaryStatus(constants.TODOS_STATUSES.TOTAL);
 
 	return {
 		newForm,

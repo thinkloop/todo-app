@@ -1,13 +1,11 @@
 import memoizerific from 'memoizerific';
-import { state } from 'todo-redux-state';
+import { constants } from 'todo-react-components';
 
-import todoReactComponents from 'todo-react-components';
-
-export default function () {
+export default function (state) {
 	const { selectedPage } = state;
-	return selectSelectedPage(selectedPage, todoReactComponents.constants.PAGES);
+	return selectSelectedPage(selectedPage);
 }
 
-export const selectSelectedPage = memoizerific(1)((selectedPage, PAGES) => {
-	return PAGES[selectedPage];
+export const selectSelectedPage = memoizerific(1)((selectedPage) => {
+	return constants.PAGES[selectedPage];
 });
