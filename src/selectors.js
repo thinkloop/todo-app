@@ -1,4 +1,4 @@
-import createSelectors from 'selectors';
+import combineSelectors from 'combine-selectors';
 import { state } from 'todo-redux-state';
 
 import selectedPage from './site/selected-page';
@@ -13,4 +13,4 @@ const selectors = {
 	todos
 };
 
-export default createSelectors(selectors, () => state);
+export default combineSelectors(selectors, () => state);

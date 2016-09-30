@@ -10,7 +10,7 @@ window.selectors = selectors;
 window.actions = actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');
 
-// subscribe to state changes and re-render app on every change
+// subscribe to state changes and re-render view on every change
 const htmlElement = document.getElementById('app');
 subscribe(() => component(htmlElement, selectors));
 

@@ -35,8 +35,8 @@
     "partial:replaceBuildFolderString": "sed 's~${build_folder}~'$npm_package_version'~g'"
   },
   "dependencies": {
+    "combine-selectors": "thinkloop/combine-selectors",
     "memoizerific": "^1.8.4",
-    "selectors": "thinkloop/selectors",
     "todo-react-components": "thinkloop/todo-react-components",
     "todo-redux-state": "thinkloop/todo-redux-state"
   },
