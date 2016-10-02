@@ -1,5 +1,5 @@
 import { state, actions, subscribe } from 'todo-redux-state';
-import { component } from 'todo-react-components';
+import { render } from 'todo-react-components';
 
 import * as PATHS from './site/constants/paths';
 import selectors from './selectors';
@@ -12,7 +12,7 @@ console.log('********************************************* \n DEVELOPMENT MODE \
 
 // subscribe to state changes and re-render view on every change
 const htmlElement = document.getElementById('app');
-subscribe(() => component(htmlElement, selectors));
+subscribe(() => render(selectors, htmlElement));
 
 // read the url and navigate to the right page
 const initialSelectedPage = Object.keys(PATHS).find(key => PATHS[key] === window.location.pathname) || PATHS.HOME;

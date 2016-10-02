@@ -23,7 +23,7 @@
     "************": "",
     "start": "augur-ui-webserver -d $npm_package_config_build_folder",
     "watch": "clear; echo '* NPM UPDATE *'; npm update; echo '* CLEAN * HTML * WATCHIFY *'; NODE_ENV=development npm run -s watch:all",
-    "test": "clear; echo '**** TESTS ****'; jest",
+    "test": "clear; echo '* NPM UPDATE *'; npm update; echo '**** TESTS ****'; jest",
     "***********": "",
     "watch:all": "npm run -s clean && (npm run -s watch:js & npm run -s watch:html)",
     "watch:js": "watchify $npm_package_config_js_entry_file --extension=.js --extension=.jsx -t [ babelify ] --debug -o 'exorcist $npm_package_config_build_folder/$npm_package_version/build.js.map > $npm_package_config_build_folder/$npm_package_version/build.js && echo ---------WATCHIFY--------`date +%r`'",
