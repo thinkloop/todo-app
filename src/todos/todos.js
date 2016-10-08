@@ -1,6 +1,9 @@
 import memoizerific from 'memoizerific';
 import { actions, constants } from 'todo-redux-state';
 
+const { addTodo, removeTodo, completeTodo, updateSelectedSummaryStatus } = actions.todos;
+const { TODOS_STATUSES } = constants;
+
 export default function (state) {
 	const { todos, selectedSummaryStatus } = state;
 
@@ -11,7 +14,7 @@ export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus) => {
 
 	const newForm = {
 		placeholder: 'What do you need to do?',
-		onSubmit: description => actions.todos.addTodo(description)
+		onSubmit: description => addTodo(description)
 	};
 
 	let list = Object.keys(todos).map(key => {
@@ -19,8 +22,8 @@ export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus) => {
 			...todos[key],
 			id: key,
 			buttonLabel: 'delete',
-			onButtonClicked: () => actions.todos.removeTodo(key),
-			onCheckboxToggled: () => actions.todos.completeTodo(key, !todos[key].isComplete)
+			onButtonClicked: () => removeTodo(key),
+			onCheckboxToggled: () => completeTodo(key, !todos[key].isComplete)
 		};
 	});
 
@@ -37,9 +40,9 @@ export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus) => {
 
 	list = list
 		.filter(todo => (
-			selectedSummaryStatus === constants.TODOS_STATUSES.TOTAL ||
-			(selectedSummaryStatus === constants.TODOS_STATUSES.COMPLETE && todo.isComplete)  ||
-			(selectedSummaryStatus === constants.TODOS_STATUSES.PENDING && !todo.isComplete)
+			selectedSummaryStatus === TODOS_STATUSES.TOTAL ||
+			(selectedSummaryStatus === TODOS_STATUSES.COMPLETE && todo.isComplete)  ||
+			(selectedSummaryStatus === TODOS_STATUSES.PENDING && !todo.isComplete)
 		))
 		.sort((a, b) => {
 			if (a.dateCreated < b.dateCreated) { return -1; }
@@ -54,9 +57,9 @@ export const selectTodos = memoizerific(1)((todos, selectedSummaryStatus) => {
 
 	summary.selectedSummaryStatus = selectedSummaryStatus;
 
-	summary.onClickPending = () => actions.todos.updateSelectedSummaryStatus(constants.TODOS_STATUSES.PENDING);
-	summary.onClickComplete = () => actions.todos.updateSelectedSummaryStatus(constants.TODOS_STATUSES.COMPLETE);
-	summary.onClickTotal = () => actions.todos.updateSelectedSummaryStatus(constants.TODOS_STATUSES.TOTAL);
+	summary.onClickPending = () => updateSelectedSummaryStatus(TODOS_STATUSES.PENDING);
+	summary.onClickComplete = () => updateSelectedSummaryStatus(TODOS_STATUSES.COMPLETE);
+	summary.onClickTotal = () => updateSelectedSummaryStatus(TODOS_STATUSES.TOTAL);
 
 	return {
 		newForm,

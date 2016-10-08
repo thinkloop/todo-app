@@ -1,11 +1,11 @@
-import { state, actions, subscribe } from 'todo-redux-state';
+import { getState, actions, subscribe } from 'todo-redux-state';
 import { render } from 'todo-react-components';
 
 import * as PATHS from './site/constants/paths';
 import selectors from './selectors';
 
 // debug stuff
-Object.defineProperty(window, "state", { get: () => state });
+Object.defineProperty(window, "state", { get: getState });
 window.selectors = selectors;
 window.actions = actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');
@@ -15,7 +15,7 @@ const htmlElement = document.getElementById('app');
 subscribe(() => render(selectors, htmlElement));
 
 // read the url and navigate to the right page
-const initialSelectedPage = Object.keys(PATHS).find(key => PATHS[key] === window.location.pathname) || PATHS.HOME;
+const initialSelectedPage = Object.keys(PATHS).find(key => PATHS[key] === `.${window.location.pathname}`) || PATHS.HOME;
 actions.site.updateSelectedPage(initialSelectedPage);
 
 // load todos

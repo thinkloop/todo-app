@@ -1,5 +1,5 @@
 import combineSelectors from 'combine-selectors';
-import { state } from 'todo-redux-state';
+import { getState } from 'todo-redux-state';
 
 import selectedPage from './site/selected-page';
 import url from './site/url';
@@ -13,4 +13,4 @@ const selectors = {
 	todos
 };
 
-export default combineSelectors(selectors, () => state);
+export default combineSelectors(selectors, getState);

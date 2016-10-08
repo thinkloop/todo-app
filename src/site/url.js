@@ -6,6 +6,6 @@ export default function (state) {
 	return selectURL(selectedPage);
 }
 
-export const selectURL = memoizerific(1)((selectedPage, SITE_PATHS = PATHS) => {
-	return SITE_PATHS[selectedPage];
+export const selectURL = memoizerific(1)((selectedPage) => {
+	return PATHS[selectedPage];
 });
