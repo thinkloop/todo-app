@@ -10,10 +10,6 @@ window.selectors = selectors;
 window.actions = actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');
 
-// subscribe to state changes and re-render view on every change
-const htmlElement = document.getElementById('app');
-subscribe(() => render(selectors, htmlElement));
-
 // read the url and navigate to the right page
 const initialSelectedPage = Object.keys(PATHS).find(key => PATHS[key] === `.${window.location.pathname}`) || PATHS.HOME;
 actions.site.updateSelectedPage(initialSelectedPage);
@@ -26,3 +22,7 @@ window.onpopstate = (e) => {
     const newSelectedPage = Object.keys(PATHS).find(key => PATHS[key] === window.location.pathname) || PATHS.HOME;
     actions.site.updateSelectedPage(newSelectedPage);
 };
+
+// subscribe to state changes and re-render view on every change
+const htmlElement = document.getElementById('app');
+subscribe(() => render(selectors, htmlElement));

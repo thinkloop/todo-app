@@ -1822,12 +1822,6 @@ window.selectors = _selectors2.default;
 window.actions = _todoReduxState.actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');
 
-// subscribe to state changes and re-render view on every change
-var htmlElement = document.getElementById('app');
-(0, _todoReduxState.subscribe)(function () {
-    return (0, _todoReactComponents.render)(_selectors2.default, htmlElement);
-});
-
 // read the url and navigate to the right page
 var initialSelectedPage = Object.keys(PATHS).find(function (key) {
     return PATHS[key] === '.' + window.location.pathname;
@@ -1844,6 +1838,12 @@ window.onpopstate = function (e) {
     }) || PATHS.HOME;
     _todoReduxState.actions.site.updateSelectedPage(newSelectedPage);
 };
+
+// subscribe to state changes and re-render view on every change
+var htmlElement = document.getElementById('app');
+(0, _todoReduxState.subscribe)(function () {
+    return (0, _todoReactComponents.render)(_selectors2.default, htmlElement);
+});
 
 },{"./selectors":9,"./site/constants/paths":10,"todo-react-components":6,"todo-redux-state":7}],9:[function(require,module,exports){
 'use strict';
