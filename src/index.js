@@ -1,7 +1,6 @@
 import { getState, actions, subscribe } from 'todo-redux-state';
 import { render } from 'todo-react-components';
 
-import * as PATHS from './site/constants/paths';
 import selectors from './selectors';
 
 // debug stuff
@@ -11,16 +10,14 @@ window.actions = actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');
 
 // read the url and navigate to the right page
-const initialSelectedPage = Object.keys(PATHS).find(key => PATHS[key] === `.${window.location.pathname}`) || PATHS.HOME;
-actions.site.updateSelectedPage(initialSelectedPage);
+actions.site.updateStateFromURL(window.location.pathname + window.location.search);
 
 // load todos
 actions.todos.loadTodos();
 
 // listen for back button, forward button, etc
 window.onpopstate = (e) => {
-    const newSelectedPage = Object.keys(PATHS).find(key => PATHS[key] === window.location.pathname) || PATHS.HOME;
-    actions.site.updateSelectedPage(newSelectedPage);
+    actions.site.updateStateFromURL(window.location.pathname + window.location.search);
 };
 
 // subscribe to state changes and re-render view on every change
