@@ -10,14 +10,14 @@ window.actions = actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');
 
 // read the url and navigate to the right page
-actions.site.updateStateFromURL(window.location.pathname + window.location.search);
+actions.site.updateURL(window.location.pathname + window.location.search);
 
 // load todos
 actions.todos.loadTodos();
 
 // listen for back button, forward button, etc
 window.onpopstate = (e) => {
-    actions.site.updateStateFromURL(window.location.pathname + window.location.search);
+    actions.site.updateURL(window.location.pathname + window.location.search);
 };
 
 // subscribe to state changes and re-render view on every change

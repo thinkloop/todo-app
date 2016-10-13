@@ -1,11 +1,4 @@
-import memoizerific from 'memoizerific';
-import * as PATHS from '../site/constants/paths';
-
 export default function (state) {
-	const { selectedPage } = state;
-	return selectURL(selectedPage);
+	const { url } = state;
+	return url;
 }
-
-export const selectURL = memoizerific(1)((selectedPage) => {
-	return PATHS[selectedPage];
-});

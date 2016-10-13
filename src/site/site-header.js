@@ -1,7 +1,10 @@
 import memoizerific from 'memoizerific';
-import { actions, constants } from 'todo-redux-state';
 
 import * as PATHS from '../site/constants/paths';
+
+import { selectHomeLink } from '../links/home';
+import { selectAboutLink } from '../links/about';
+
 
 export default function (state) {
 	const { selectedPage } = state;
@@ -11,15 +14,8 @@ export default function (state) {
 export const selectSiteHeader = memoizerific(1)((selectedPage) => {
 
 	return {
-		labelHome: 'Todo App',
-		labelAbout: 'About',
-
-		hrefHome: PATHS[constants.PAGES.HOME],
-		hrefAbout: PATHS[constants.PAGES.ABOUT],
-
 		selectedPage: selectedPage,
-
-		onClickHome: () => actions.site.updateSelectedPage(constants.PAGES.HOME),
-		onClickAbout: () => actions.site.updateSelectedPage(constants.PAGES.ABOUT)
+		homeLink: selectHomeLink(),
+		aboutLink: selectAboutLink()
 	};
 });

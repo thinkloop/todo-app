@@ -447,7 +447,7 @@ process.umask = function() { return 0; };
 
 },{}],6:[function(require,module,exports){
 (function (global){
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.todoReactComponents=e()}}(function(){var e;return function e(t,a,n){function o(s,r){if(!a[s]){if(!t[s]){var u="function"==typeof require&&require;if(!r&&u)return u(s,!0);if(l)return l(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var d=a[s]={exports:{}};t[s][0].call(d.exports,function(e){var a=t[s][1][e];return o(a?a:e)},d,d.exports,e,t,a,n)}return a[s].exports}for(var l="function"==typeof require&&require,s=0;s<n.length;s++)o(n[s]);return o}({1:[function(t,a){!function(){"use strict";function t(){for(var e=[],a=0;a<arguments.length;a++){var o=arguments[a];if(o){var l=typeof o;if("string"===l||"number"===l)e.push(o);else if(Array.isArray(o))e.push(t.apply(null,o));else if("object"===l)for(var s in o)n.call(o,s)&&o[s]&&e.push(s)}}return e.join(" ")}var n={}.hasOwnProperty;"undefined"!=typeof a&&a.exports?a.exports=t:"function"==typeof e&&"object"==typeof e.amd&&e.amd?e("classnames",[],function(){return t}):window.classNames=t}()},{}],2:[function(e,t){t.exports=React.createClass({propTypes:{className:React.PropTypes.string,href:React.PropTypes.string,target:React.PropTypes.string,onClick:React.PropTypes.func},handleClick:function(e){this.props.target||this.props.href&&0===this.props.href.indexOf("mailto:")||0===!e.button||e.metaKey||e.altKey||e.ctrlKey||e.shiftKey||(e.preventDefault(),this.props.onClick&&this.props.onClick(this.props.href))},render:function(){return React.createElement("a",Object.assign({},this.props,{href:this.props.href,className:"link "+this.props.className,onClick:this.handleClick}))}})},{}],3:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../site/site-header"),c=n(u),d=function(e){return l.default.createElement("div",null,l.default.createElement(c.default,e.siteHeader),l.default.createElement("main",{className:r.default("page",e.className)},l.default.createElement("p",null,"Read the article: ",l.default.createElement("a",{href:"http://www.thinkloop.com/article/extreme-decoupling-react-redux-selectors",target:"_blank"},"Extreme Decoupling React Redux Selectors")),l.default.createElement("p",null,"See the code on github:"),l.default.createElement("ul",null,l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-app",target:"_blank"},l.default.createElement("strong",null,"integration"),": selectors")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-react-components",target:"_blank"},l.default.createElement("strong",null,"view"),": react components")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-redux-state",target:"_blank"},l.default.createElement("strong",null,"state"),": redux container")))))};d.propTypes={className:l.default.PropTypes.string,siteHeader:l.default.PropTypes.object},a.default=d},{"../site/site-header":6,classnames:1}],4:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e};a.default=function(e,t){var a=void 0;switch(e.url!==window.location.pathname+window.location.search&&window.history.pushState(null,null,e.url),e.selectedPage){case u.ABOUT:a=s.default.createElement(f.default,{className:"about-page",siteHeader:e.siteHeader});break;default:a=s.default.createElement(d.default,o({className:"todos-page"},e.todos,{siteHeader:e.siteHeader}))}r.render(a,t)};var l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r="undefined"!=typeof window?window.ReactDOM:"undefined"!=typeof global?global.ReactDOM:null,u=e("./site/constants/pages"),c=e("./todos/todos-page"),d=n(c),i=e("./about/about-page"),f=n(i)},{"./about/about-page":3,"./site/constants/pages":5,"./todos/todos-page":12}],5:[function(e,t,a){"use strict";Object.defineProperty(a,"__esModule",{value:!0});a.HOME="HOME",a.ABOUT="ABOUT"},{}],6:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../site/constants/pages"),c=e("link-react"),d=n(c),i=function(e){return l.default.createElement("header",{className:r.default("site-header",e.className)},l.default.createElement("nav",null,l.default.createElement(d.default,{className:r.default({selected:e.selectedPage===u.HOME}),href:e.hrefHome,onClick:e.onClickHome},e.labelHome),l.default.createElement(d.default,{className:r.default({selected:e.selectedPage===u.ABOUT}),href:e.hrefAbout,onClick:e.onClickAbout},e.labelAbout)))};i.propTypes={className:l.default.PropTypes.string,selectedPage:l.default.PropTypes.string,labelHome:l.default.PropTypes.string,labelAbout:l.default.PropTypes.string,hrefHome:l.default.PropTypes.string,hrefAbout:l.default.PropTypes.string,onClickHome:l.default.PropTypes.func,onClickAbout:l.default.PropTypes.func},a.default=i},{"../site/constants/pages":5,classnames:1,"link-react":2}],7:[function(e,t,a){"use strict";function n(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var a in e)Object.prototype.hasOwnProperty.call(e,a)&&(t[a]=e[a]);return t.default=e,t}function o(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0}),a.constants=a.render=void 0;var l=e("./render"),s=o(l),r=e("./site/constants/pages"),u=n(r),c=e("./todos/constants/statuses"),d=n(c),i={PAGES:u,TODO_STATUSES:d};a.default={render:s.default,constants:i},a.render=s.default,a.constants=i},{"./render":4,"./site/constants/pages":5,"./todos/constants/statuses":8}],8:[function(e,t,a){"use strict";Object.defineProperty(a,"__esModule",{value:!0});a.PENDING="PENDING",a.COMPLETE="COMPLETE",a.TOTAL="TOTAL"},{}],9:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=function(e){return l.default.createElement("article",{className:r.default("list-item",{checked:e.isComplete},e.className)},l.default.createElement("label",{className:"description"},l.default.createElement("input",{className:"checkbox",type:"checkbox",checked:e.isComplete,onChange:e.onCheckboxToggled}),e.description),l.default.createElement("button",{className:"button",onClick:e.onButtonClicked},e.buttonLabel))};u.propTypes={className:l.default.PropTypes.string,description:l.default.PropTypes.string,isComplete:l.default.PropTypes.bool,buttonLabel:l.default.PropTypes.string,onButtonClicked:l.default.PropTypes.func,onCheckboxToggled:l.default.PropTypes.func},a.default=u},{classnames:1}],10:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r=e("classnames"),u=n(r),c=e("../todos/todo-item"),d=n(c),i=function(e){return s.default.createElement("section",{className:u.default("list",e.className)},!!e.todos&&e.todos.map(function(e){return s.default.createElement(d.default,o({key:e.id},e))}))};i.propTypes={className:s.default.PropTypes.string,todos:s.default.PropTypes.array},a.default=i},{"../todos/todo-item":9,classnames:1}],11:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function l(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(a,"__esModule",{value:!0});var r=function(){function e(e,t){for(var a=0;a<t.length;a++){var n=t[a];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,a,n){return a&&e(t.prototype,a),n&&e(t,n),t}}(),u="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,c=n(u),d=e("classnames"),i=n(d),f=function(e){function t(e){o(this,t);var a=l(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return a.handleOnChange=function(e){a.setState({value:e.target.value})},a.handleOnSubmit=function(e){e.preventDefault(),a.setState({value:""}),a.props.onSubmit(a.state.value)},a.state={value:a.props.value||""},a.handleOnChange=a.handleOnChange.bind(a),a.handleOnSubmit=a.handleOnSubmit.bind(a),a}return s(t,e),r(t,[{key:"render",value:function(){var e=this.props,t=this.state;return c.default.createElement("form",{className:i.default(e.className),onSubmit:this.handleOnSubmit},c.default.createElement("input",{className:"todos-new-form-input",value:t.value,placeholder:e.placeholder,onChange:this.handleOnChange}))}}]),t}(u.Component);f.propTypes={className:c.default.PropTypes.string,placeholder:c.default.PropTypes.string,onSubmit:c.default.PropTypes.func},a.default=f},{classnames:1}],12:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r=e("classnames"),u=n(r),c=e("../site/site-header"),d=n(c),i=e("../todos/todos-new-form"),f=n(i),p=e("../todos/todos-list"),m=n(p),y=e("../todos/todos-summary"),g=n(y),b=function(e){return s.default.createElement("div",null,s.default.createElement(d.default,e.siteHeader),s.default.createElement("main",{className:u.default("page",e.className)},!!e.newForm&&s.default.createElement(f.default,o({className:"todos-new-form"},e.newForm)),!!e.list&&s.default.createElement(m.default,{className:"todos-list",todos:e.list}),!!e.summary&&s.default.createElement(g.default,o({className:"todos-summary"},e.summary))))};b.propTypes={className:s.default.PropTypes.string,siteHeader:s.default.PropTypes.object,newForm:s.default.PropTypes.object,list:s.default.PropTypes.array,summary:s.default.PropTypes.object},a.default=b},{"../site/site-header":6,"../todos/todos-list":10,"../todos/todos-new-form":11,"../todos/todos-summary":13,classnames:1}],13:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../todos/constants/statuses"),c=function(e){return l.default.createElement("section",{className:r.default("todo-summary",e.className)},l.default.createElement("span",{className:r.default("todo-summary-pending",{"is-selected":e.selectedSummaryStatus===u.PENDING}),onClick:e.onClickPending},e.countIncomplete),l.default.createElement("span",{className:r.default("todo-summary-complete",{"is-selected":e.selectedSummaryStatus===u.COMPLETE}),onClick:e.onClickComplete},e.countComplete),l.default.createElement("span",{className:r.default("todo-summary-total",{"is-selected":e.selectedSummaryStatus===u.TOTAL}),onClick:e.onClickTotal},e.countTotal))};c.propTypes={className:l.default.PropTypes.string,countIncomplete:l.default.PropTypes.string,countComplete:l.default.PropTypes.string,countTotal:l.default.PropTypes.string,selectedSummaryStatus:l.default.PropTypes.oneOf([u.PENDING,u.COMPLETE,u.TOTAL]),onClickPending:l.default.PropTypes.func,onClickComplete:l.default.PropTypes.func,onClickTotal:l.default.PropTypes.func},a.default=c},{"../todos/constants/statuses":8,classnames:1}]},{},[7])(7)});
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.todoReactComponents=e()}}(function(){var e;return function e(t,a,n){function o(s,r){if(!a[s]){if(!t[s]){var u="function"==typeof require&&require;if(!r&&u)return u(s,!0);if(l)return l(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var d=a[s]={exports:{}};t[s][0].call(d.exports,function(e){var a=t[s][1][e];return o(a?a:e)},d,d.exports,e,t,a,n)}return a[s].exports}for(var l="function"==typeof require&&require,s=0;s<n.length;s++)o(n[s]);return o}({1:[function(t,a){!function(){"use strict";function t(){for(var e=[],a=0;a<arguments.length;a++){var o=arguments[a];if(o){var l=typeof o;if("string"===l||"number"===l)e.push(o);else if(Array.isArray(o))e.push(t.apply(null,o));else if("object"===l)for(var s in o)n.call(o,s)&&o[s]&&e.push(s)}}return e.join(" ")}var n={}.hasOwnProperty;"undefined"!=typeof a&&a.exports?a.exports=t:"function"==typeof e&&"object"==typeof e.amd&&e.amd?e("classnames",[],function(){return t}):window.classNames=t}()},{}],2:[function(e,t){t.exports=React.createClass({propTypes:{className:React.PropTypes.string,href:React.PropTypes.string,target:React.PropTypes.string,onClick:React.PropTypes.func},handleClick:function(e){this.props.target||this.props.href&&0===this.props.href.indexOf("mailto:")||0===!e.button||e.metaKey||e.altKey||e.ctrlKey||e.shiftKey||(e.preventDefault(),this.props.onClick&&this.props.onClick(this.props.href))},render:function(){return React.createElement("a",Object.assign({},this.props,{href:this.props.href,className:"link "+this.props.className,onClick:this.handleClick}))}})},{}],3:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../site/site-header"),c=n(u),d=function(e){return l.default.createElement("div",null,l.default.createElement(c.default,e.siteHeader),l.default.createElement("main",{className:r.default("page",e.className)},l.default.createElement("p",null,"Read the article: ",l.default.createElement("a",{href:"http://www.thinkloop.com/article/extreme-decoupling-react-redux-selectors",target:"_blank"},"Extreme Decoupling React Redux Selectors")),l.default.createElement("p",null,"See the code on github:"),l.default.createElement("ul",null,l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-app",target:"_blank"},l.default.createElement("strong",null,"integration"),": selectors")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-react-components",target:"_blank"},l.default.createElement("strong",null,"view"),": react components")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-redux-state",target:"_blank"},l.default.createElement("strong",null,"state"),": redux container")))))};d.propTypes={className:l.default.PropTypes.string,siteHeader:l.default.PropTypes.object},a.default=d},{"../site/site-header":6,classnames:1}],4:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e};a.default=function(e,t){var a=void 0;switch(e.url!==window.location.pathname+window.location.search&&window.history.pushState(null,null,e.url),e.selectedPage){case u.ABOUT:a=s.default.createElement(f.default,{className:"about-page",siteHeader:e.siteHeader});break;default:a=s.default.createElement(d.default,o({className:"todos-page"},e.todos,{siteHeader:e.siteHeader}))}r.render(a,t)};var l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r="undefined"!=typeof window?window.ReactDOM:"undefined"!=typeof global?global.ReactDOM:null,u=e("./site/constants/pages"),c=e("./todos/todos-page"),d=n(c),i=e("./about/about-page"),f=n(i)},{"./about/about-page":3,"./site/constants/pages":5,"./todos/todos-page":12}],5:[function(e,t,a){"use strict";Object.defineProperty(a,"__esModule",{value:!0});a.HOME="HOME",a.ABOUT="ABOUT"},{}],6:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../site/constants/pages"),c=e("link-react"),d=n(c),i=function(e){return l.default.createElement("header",{className:r.default("site-header",e.className)},l.default.createElement("nav",null,l.default.createElement(d.default,{className:r.default({selected:e.selectedPage===u.HOME}),href:e.homeLink.href,onClick:e.homeLink.onClick},e.homeLink.label),l.default.createElement(d.default,{className:r.default({selected:e.selectedPage===u.ABOUT}),href:e.aboutLink.href,onClick:e.aboutLink.onClick},e.aboutLink.label)))};i.propTypes={className:l.default.PropTypes.string,selectedPage:l.default.PropTypes.string,homeLink:l.default.PropTypes.object,aboutLink:l.default.PropTypes.object},a.default=i},{"../site/constants/pages":5,classnames:1,"link-react":2}],7:[function(e,t,a){"use strict";function n(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var a in e)Object.prototype.hasOwnProperty.call(e,a)&&(t[a]=e[a]);return t.default=e,t}function o(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0}),a.constants=a.render=void 0;var l=e("./render"),s=o(l),r=e("./site/constants/pages"),u=n(r),c=e("./todos/constants/statuses"),d=n(c),i={PAGES:u,TODO_STATUSES:d};a.default={render:s.default,constants:i},a.render=s.default,a.constants=i},{"./render":4,"./site/constants/pages":5,"./todos/constants/statuses":8}],8:[function(e,t,a){"use strict";Object.defineProperty(a,"__esModule",{value:!0});a.PENDING="PENDING",a.COMPLETE="COMPLETE",a.TOTAL="TOTAL"},{}],9:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=function(e){return l.default.createElement("article",{className:r.default("list-item",{checked:e.isComplete},e.className)},l.default.createElement("label",{className:"description"},l.default.createElement("input",{className:"checkbox",type:"checkbox",checked:e.isComplete,onChange:e.onCheckboxToggled}),e.description),l.default.createElement("button",{className:"button",onClick:e.onButtonClicked},e.buttonLabel))};u.propTypes={className:l.default.PropTypes.string,description:l.default.PropTypes.string,isComplete:l.default.PropTypes.bool,buttonLabel:l.default.PropTypes.string,onButtonClicked:l.default.PropTypes.func,onCheckboxToggled:l.default.PropTypes.func},a.default=u},{classnames:1}],10:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r=e("classnames"),u=n(r),c=e("../todos/todo-item"),d=n(c),i=function(e){return s.default.createElement("section",{className:u.default("list",e.className)},!!e.todos&&e.todos.map(function(e){return s.default.createElement(d.default,o({key:e.id},e))}))};i.propTypes={className:s.default.PropTypes.string,todos:s.default.PropTypes.array},a.default=i},{"../todos/todo-item":9,classnames:1}],11:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function l(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(a,"__esModule",{value:!0});var r=function(){function e(e,t){for(var a=0;a<t.length;a++){var n=t[a];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,a,n){return a&&e(t.prototype,a),n&&e(t,n),t}}(),u="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,c=n(u),d=e("classnames"),i=n(d),f=function(e){function t(e){o(this,t);var a=l(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return a.handleOnChange=function(e){a.setState({value:e.target.value})},a.handleOnSubmit=function(e){e.preventDefault(),a.setState({value:""}),a.props.onSubmit(a.state.value)},a.state={value:a.props.value||""},a.handleOnChange=a.handleOnChange.bind(a),a.handleOnSubmit=a.handleOnSubmit.bind(a),a}return s(t,e),r(t,[{key:"render",value:function(){var e=this.props,t=this.state;return c.default.createElement("form",{className:i.default(e.className),onSubmit:this.handleOnSubmit},c.default.createElement("input",{className:"todos-new-form-input",value:t.value,placeholder:e.placeholder,onChange:this.handleOnChange}))}}]),t}(u.Component);f.propTypes={className:c.default.PropTypes.string,placeholder:c.default.PropTypes.string,onSubmit:c.default.PropTypes.func},a.default=f},{classnames:1}],12:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r=e("classnames"),u=n(r),c=e("../site/site-header"),d=n(c),i=e("../todos/todos-new-form"),f=n(i),p=e("../todos/todos-list"),m=n(p),y=e("../todos/todos-summary"),h=n(y),b=function(e){return s.default.createElement("div",null,s.default.createElement(d.default,e.siteHeader),s.default.createElement("main",{className:u.default("page",e.className)},!!e.newForm&&s.default.createElement(f.default,o({className:"todos-new-form"},e.newForm)),!!e.list&&s.default.createElement(m.default,{className:"todos-list",todos:e.list}),!!e.summary&&s.default.createElement(h.default,o({className:"todos-summary"},e.summary))))};b.propTypes={className:s.default.PropTypes.string,siteHeader:s.default.PropTypes.object,newForm:s.default.PropTypes.object,list:s.default.PropTypes.array,summary:s.default.PropTypes.object},a.default=b},{"../site/site-header":6,"../todos/todos-list":10,"../todos/todos-new-form":11,"../todos/todos-summary":13,classnames:1}],13:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../todos/constants/statuses"),c=function(e){return l.default.createElement("section",{className:r.default("todo-summary",e.className)},l.default.createElement("span",{className:r.default("todo-summary-pending",{"is-selected":e.selectedSummaryStatus===u.PENDING}),onClick:e.onClickPending},e.countIncomplete),l.default.createElement("span",{className:r.default("todo-summary-complete",{"is-selected":e.selectedSummaryStatus===u.COMPLETE}),onClick:e.onClickComplete},e.countComplete),l.default.createElement("span",{className:r.default("todo-summary-total",{"is-selected":e.selectedSummaryStatus===u.TOTAL}),onClick:e.onClickTotal},e.countTotal))};c.propTypes={className:l.default.PropTypes.string,countIncomplete:l.default.PropTypes.string,countComplete:l.default.PropTypes.string,countTotal:l.default.PropTypes.string,selectedSummaryStatus:l.default.PropTypes.oneOf([u.PENDING,u.COMPLETE,u.TOTAL]),onClickPending:l.default.PropTypes.func,onClickComplete:l.default.PropTypes.func,onClickTotal:l.default.PropTypes.func},a.default=c},{"../todos/constants/statuses":8,classnames:1}]},{},[7])(7)});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{}],7:[function(require,module,exports){
@@ -1300,9 +1300,9 @@ var _statuses = _dereq_('./todos/constants/statuses');
 
 var TODOS_STATUSES = _interopRequireWildcard(_statuses);
 
-var _updateStateFromUrl = _dereq_('./site/actions/update-state-from-url');
+var _updateUrl = _dereq_('./site/actions/update-url');
 
-var _updateStateFromUrl2 = _interopRequireDefault(_updateStateFromUrl);
+var _updateUrl2 = _interopRequireDefault(_updateUrl);
 
 var _updateSelectedPage = _dereq_('./site/actions/update-selected-page');
 
@@ -1334,7 +1334,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var actionsSet = {
 	site: {
-		updateStateFromURL: _updateStateFromUrl2.default,
+		updateURL: _updateUrl2.default,
 		updateSelectedPage: _updateSelectedPage2.default
 	},
 	todos: {
@@ -1378,7 +1378,7 @@ exports.actions = actions;
 exports.constants = constants;
 exports.subscribe = subscribe;
 
-},{"../src/store":22,"./site/actions/update-selected-page":17,"./site/actions/update-state-from-url":18,"./site/constants/pages":19,"./todos/actions/add-todo":23,"./todos/actions/complete-todo":24,"./todos/actions/load-todos":25,"./todos/actions/remove-todo":26,"./todos/actions/update-selected-summary-status":27,"./todos/constants/statuses":29}],17:[function(_dereq_,module,exports){
+},{"../src/store":23,"./site/actions/update-selected-page":17,"./site/actions/update-url":18,"./site/constants/pages":19,"./todos/actions/add-todo":24,"./todos/actions/complete-todo":25,"./todos/actions/load-todos":26,"./todos/actions/remove-todo":27,"./todos/actions/update-selected-summary-status":28,"./todos/constants/statuses":30}],17:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1406,10 +1406,17 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-exports.default = function (url) {
+exports.default = function (newURL) {
 	return function (dispatch, getState) {
-		var splitURL = url.split('?');
+		var _getState = getState();
 
+		var url = _getState.url;
+
+		if (newURL === url) {
+			return;
+		}
+
+		var splitURL = newURL.split('?');
 		var path = splitURL[0];
 		var searchParams = {};
 
@@ -1417,11 +1424,11 @@ exports.default = function (url) {
 			searchParams = parseSearchParams(splitURL[1]);
 		}
 
-		dispatch({ type: UPDATE_STATE_FROM_URL, path: path, searchParams: searchParams });
+		dispatch({ type: UPDATE_URL, parsedURL: { path: path, searchParams: searchParams, url: newURL } });
 	};
 };
 
-var UPDATE_STATE_FROM_URL = exports.UPDATE_STATE_FROM_URL = 'UPDATE_STATE_FROM_URL';
+var UPDATE_URL = exports.UPDATE_URL = 'UPDATE_URL';
 
 function parseSearchParams(searchString) {
 	var pairSplit = void 0;
@@ -1449,7 +1456,7 @@ var ABOUT = exports.ABOUT = 'ABOUT';
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.PATHS = undefined;
+exports.DEFAULT_PATH = exports.PATHS = undefined;
 
 var _pages = _dereq_('../../site/constants/pages');
 
@@ -1457,6 +1464,8 @@ var PATHS = exports.PATHS = {
 	'/': _pages.HOME,
 	'/about': _pages.ABOUT
 };
+
+var DEFAULT_PATH = exports.DEFAULT_PATH = '/';
 
 },{"../../site/constants/pages":19}],21:[function(_dereq_,module,exports){
 'use strict';
@@ -1474,8 +1483,8 @@ exports.default = function () {
 		case _updateSelectedPage.UPDATE_SELECTED_PAGE:
 			return action.selectedPage;
 
-		case _updateStateFromUrl.UPDATE_STATE_FROM_URL:
-			return _paths.PATHS[action.path] || _pages.HOME;
+		case _updateUrl.UPDATE_URL:
+			return _paths.PATHS[action.parsedURL.path] || _pages.HOME;
 
 		default:
 			return selectedPage;
@@ -1484,13 +1493,38 @@ exports.default = function () {
 
 var _updateSelectedPage = _dereq_('../../site/actions/update-selected-page');
 
-var _updateStateFromUrl = _dereq_('../../site/actions/update-state-from-url');
+var _updateUrl = _dereq_('../../site/actions/update-url');
 
 var _pages = _dereq_('../../site/constants/pages');
 
 var _paths = _dereq_('../../site/constants/paths');
 
-},{"../../site/actions/update-selected-page":17,"../../site/actions/update-state-from-url":18,"../../site/constants/pages":19,"../../site/constants/paths":20}],22:[function(_dereq_,module,exports){
+},{"../../site/actions/update-selected-page":17,"../../site/actions/update-url":18,"../../site/constants/pages":19,"../../site/constants/paths":20}],22:[function(_dereq_,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+exports.default = function () {
+	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _paths.DEFAULT_PATH;
+	var action = arguments[1];
+
+	switch (action.type) {
+
+		case _updateUrl.UPDATE_URL:
+			return action.parsedURL.url;
+
+		default:
+			return url;
+	}
+};
+
+var _updateUrl = _dereq_('../../site/actions/update-url');
+
+var _paths = _dereq_('../../site/constants/paths');
+
+},{"../../site/actions/update-url":18,"../../site/constants/paths":20}],23:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1502,6 +1536,10 @@ var _redux = _dereq_('redux');
 var _reduxThunk = _dereq_('redux-thunk');
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+
+var _url = _dereq_('./site/reducers/url');
+
+var _url2 = _interopRequireDefault(_url);
 
 var _selectedPage = _dereq_('./site/reducers/selected-page');
 
@@ -1517,16 +1555,15 @@ var _selectedSummaryStatus2 = _interopRequireDefault(_selectedSummaryStatus);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// reducers
 var reducers = {
+	url: _url2.default,
 	selectedPage: _selectedPage2.default,
 	todos: _todos2.default,
 	selectedSummaryStatus: _selectedSummaryStatus2.default
 };
 
 // middleware that logs all actions to console
-
-
-// reducers
 var consoleLog = function consoleLog(store) {
 	return function (next) {
 		return function (action) {
@@ -1549,7 +1586,7 @@ if (process.env.NODE_ENV !== 'production') {
 // create store
 exports.default = (0, _redux.createStore)((0, _redux.combineReducers)(reducers), middleWare);
 
-},{"./site/reducers/selected-page":21,"./todos/reducers/selected-summary-status":30,"./todos/reducers/todos":31,"redux":7,"redux-thunk":1}],23:[function(_dereq_,module,exports){
+},{"./site/reducers/selected-page":21,"./site/reducers/url":22,"./todos/reducers/selected-summary-status":31,"./todos/reducers/todos":32,"redux":7,"redux-thunk":1}],24:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1582,7 +1619,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-},{"../../todos/actions/update-todos":28,"../../todos/services/fake-backend/new-todo":34}],24:[function(_dereq_,module,exports){
+},{"../../todos/actions/update-todos":29,"../../todos/services/fake-backend/new-todo":35}],25:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1621,7 +1658,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-},{"../../todos/actions/update-todos":28,"../../todos/services/fake-backend/save-todo":35}],25:[function(_dereq_,module,exports){
+},{"../../todos/actions/update-todos":29,"../../todos/services/fake-backend/save-todo":36}],26:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1652,7 +1689,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var LOAD_TODOS = exports.LOAD_TODOS = 'LOAD_TODOS';
 
-},{"../../todos/actions/update-todos":28,"../../todos/services/fake-backend/load-all-todos":33}],26:[function(_dereq_,module,exports){
+},{"../../todos/actions/update-todos":29,"../../todos/services/fake-backend/load-all-todos":34}],27:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1679,7 +1716,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-},{"../../todos/actions/update-todos":28,"../../todos/services/fake-backend/delete-todo":32}],27:[function(_dereq_,module,exports){
+},{"../../todos/actions/update-todos":29,"../../todos/services/fake-backend/delete-todo":33}],28:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1692,7 +1729,7 @@ exports.default = function (selectedSummaryStatus) {
 
 var UPDATE_SELECTED_SUMMARY_STATUS = exports.UPDATE_SELECTED_SUMMARY_STATUS = 'UPDATE_SELECTED_SUMMARY_STATUS';
 
-},{}],28:[function(_dereq_,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1705,7 +1742,7 @@ exports.default = function (todos) {
 
 var UPDATE_TODOS = exports.UPDATE_TODOS = 'UPDATE_TODOS';
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1715,7 +1752,7 @@ var PENDING = exports.PENDING = 'PENDING';
 var COMPLETE = exports.COMPLETE = 'COMPLETE';
 var TOTAL = exports.TOTAL = 'TOTAL';
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1739,7 +1776,7 @@ var _updateSelectedSummaryStatus = _dereq_('../../todos/actions/update-selected-
 
 var _statuses = _dereq_('../../todos/constants/statuses');
 
-},{"../../todos/actions/update-selected-summary-status":27,"../../todos/constants/statuses":29}],31:[function(_dereq_,module,exports){
+},{"../../todos/actions/update-selected-summary-status":28,"../../todos/constants/statuses":30}],32:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1775,7 +1812,7 @@ exports.default = function () {
 
 var _updateTodos = _dereq_('../../todos/actions/update-todos');
 
-},{"../../todos/actions/update-todos":28}],32:[function(_dereq_,module,exports){
+},{"../../todos/actions/update-todos":29}],33:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1790,7 +1827,7 @@ exports.default = function (id) {
 	});
 };
 
-},{}],33:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1818,7 +1855,7 @@ exports.default = function () {
 	});
 };
 
-},{}],34:[function(_dereq_,module,exports){
+},{}],35:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1841,7 +1878,7 @@ exports.default = function (description) {
 	});
 };
 
-},{}],35:[function(_dereq_,module,exports){
+},{}],36:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1880,14 +1917,14 @@ window.actions = _todoReduxState.actions;
 console.log('********************************************* \n DEVELOPMENT MODE \n window.state available \n window.selectors available \n ********************************************* \n');
 
 // read the url and navigate to the right page
-_todoReduxState.actions.site.updateStateFromURL(window.location.pathname + window.location.search);
+_todoReduxState.actions.site.updateURL(window.location.pathname + window.location.search);
 
 // load todos
 _todoReduxState.actions.todos.loadTodos();
 
 // listen for back button, forward button, etc
 window.onpopstate = function (e) {
-    _todoReduxState.actions.site.updateStateFromURL(window.location.pathname + window.location.search);
+    _todoReduxState.actions.site.updateURL(window.location.pathname + window.location.search);
 };
 
 // subscribe to state changes and re-render view on every change
@@ -1896,7 +1933,81 @@ var htmlElement = document.getElementById('app');
     return (0, _todoReactComponents.render)(_selectors2.default, htmlElement);
 });
 
-},{"./selectors":9,"todo-react-components":6,"todo-redux-state":7}],9:[function(require,module,exports){
+},{"./selectors":11,"todo-react-components":6,"todo-redux-state":7}],9:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.selectAboutLink = undefined;
+
+exports.default = function (state) {
+	return selectAboutLink();
+};
+
+var _memoizerific = require('memoizerific');
+
+var _memoizerific2 = _interopRequireDefault(_memoizerific);
+
+var _todoReduxState = require('todo-redux-state');
+
+var _paths = require('../site/constants/paths');
+
+var PATHS = _interopRequireWildcard(_paths);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var selectAboutLink = exports.selectAboutLink = (0, _memoizerific2.default)(1)(function () {
+	var url = PATHS[_todoReduxState.constants.PAGES.ABOUT];
+	return {
+		label: 'About',
+		href: url,
+		onClick: function onClick() {
+			return _todoReduxState.actions.site.updateURL(url);
+		}
+	};
+});
+
+},{"../site/constants/paths":12,"memoizerific":4,"todo-redux-state":7}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.selectHomeLink = undefined;
+
+exports.default = function (state) {
+	return selectHomeLink();
+};
+
+var _memoizerific = require('memoizerific');
+
+var _memoizerific2 = _interopRequireDefault(_memoizerific);
+
+var _todoReduxState = require('todo-redux-state');
+
+var _paths = require('../site/constants/paths');
+
+var PATHS = _interopRequireWildcard(_paths);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var selectHomeLink = exports.selectHomeLink = (0, _memoizerific2.default)(1)(function () {
+	var url = PATHS[_todoReduxState.constants.PAGES.HOME];
+	return {
+		label: 'Home',
+		href: url,
+		onClick: function onClick() {
+			return _todoReduxState.actions.site.updateURL(url);
+		}
+	};
+});
+
+},{"../site/constants/paths":12,"memoizerific":4,"todo-redux-state":7}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1936,7 +2047,7 @@ var selectors = {
 
 exports.default = (0, _combineSelectors2.default)(selectors, _todoReduxState.getState);
 
-},{"./site/selected-page":11,"./site/site-header":12,"./site/url":13,"./todos/todos":14,"combine-selectors":1,"todo-redux-state":7}],10:[function(require,module,exports){
+},{"./site/selected-page":13,"./site/site-header":14,"./site/url":15,"./todos/todos":16,"combine-selectors":1,"todo-redux-state":7}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1945,7 +2056,7 @@ Object.defineProperty(exports, "__esModule", {
 var HOME = exports.HOME = '/';
 var ABOUT = exports.ABOUT = '/about';
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1971,7 +2082,7 @@ var selectSelectedPage = exports.selectSelectedPage = (0, _memoizerific2.default
 	return _todoReactComponents.constants.PAGES[selectedPage];
 });
 
-},{"memoizerific":4,"todo-react-components":6}],12:[function(require,module,exports){
+},{"memoizerific":4,"todo-react-components":6}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1989,11 +2100,13 @@ var _memoizerific = require('memoizerific');
 
 var _memoizerific2 = _interopRequireDefault(_memoizerific);
 
-var _todoReduxState = require('todo-redux-state');
-
 var _paths = require('../site/constants/paths');
 
 var PATHS = _interopRequireWildcard(_paths);
+
+var _home = require('../links/home');
+
+var _about = require('../links/about');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -2002,54 +2115,26 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var selectSiteHeader = exports.selectSiteHeader = (0, _memoizerific2.default)(1)(function (selectedPage) {
 
 	return {
-		labelHome: 'Todo App',
-		labelAbout: 'About',
-
-		hrefHome: PATHS[_todoReduxState.constants.PAGES.HOME],
-		hrefAbout: PATHS[_todoReduxState.constants.PAGES.ABOUT],
-
 		selectedPage: selectedPage,
-
-		onClickHome: function onClickHome() {
-			return _todoReduxState.actions.site.updateSelectedPage(_todoReduxState.constants.PAGES.HOME);
-		},
-		onClickAbout: function onClickAbout() {
-			return _todoReduxState.actions.site.updateSelectedPage(_todoReduxState.constants.PAGES.ABOUT);
-		}
+		homeLink: (0, _home.selectHomeLink)(),
+		aboutLink: (0, _about.selectAboutLink)()
 	};
 });
 
-},{"../site/constants/paths":10,"memoizerific":4,"todo-redux-state":7}],13:[function(require,module,exports){
-'use strict';
+},{"../links/about":9,"../links/home":10,"../site/constants/paths":12,"memoizerific":4}],15:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.selectURL = undefined;
 
 exports.default = function (state) {
-	var selectedPage = state.selectedPage;
+	var url = state.url;
 
-	return selectURL(selectedPage);
+	return url;
 };
 
-var _memoizerific = require('memoizerific');
-
-var _memoizerific2 = _interopRequireDefault(_memoizerific);
-
-var _paths = require('../site/constants/paths');
-
-var PATHS = _interopRequireWildcard(_paths);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var selectURL = exports.selectURL = (0, _memoizerific2.default)(1)(function (selectedPage) {
-	return PATHS[selectedPage];
-});
-
-},{"../site/constants/paths":10,"memoizerific":4}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
