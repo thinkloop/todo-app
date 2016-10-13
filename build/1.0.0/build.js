@@ -1,4 +1,269 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+module.exports = function(selectors, getState, ...args) {
+	return Object.keys(selectors).reduce((p, selectorKey) => {
+		Object.defineProperty(p, selectorKey, {
+			get: function() { return selectors[selectorKey](getState(), ...args) },
+			enumerable: true
+		});
+		return p;
+	}, {});
+};
+
+},{}],2:[function(require,module,exports){
+(function (process){
+if (typeof Map !== 'function' || (process && process.env && process.env.TEST_MAPORSIMILAR === 'true')) {
+	module.exports = require('./similar');
+}
+else {
+	module.exports = Map;
+}
+}).call(this,require('_process'))
+
+},{"./similar":3,"_process":5}],3:[function(require,module,exports){
+function Similar() {
+	this.list = [];
+	this.lastItem = undefined;
+	this.size = 0;
+
+	return this;
+}
+
+Similar.prototype.get = function(key) {
+	var index;
+
+	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
+		return this.lastItem.val;
+	}
+
+	index = this.indexOf(key);
+	if (index >= 0) {
+		this.lastItem = this.list[index];
+		return this.list[index].val;
+	}
+
+	return undefined;
+};
+
+Similar.prototype.set = function(key, val) {
+	var index;
+
+	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
+		this.lastItem.val = val;
+		return this;
+	}
+
+	index = this.indexOf(key);
+	if (index >= 0) {
+		this.lastItem = this.list[index];
+		this.list[index].val = val;
+		return this;
+	}
+
+	this.lastItem = { key: key, val: val };
+	this.list.push(this.lastItem);
+	this.size++;
+
+	return this;
+};
+
+Similar.prototype.delete = function(key) {
+	var index;
+
+	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
+		this.lastItem = undefined;
+	}
+
+	index = this.indexOf(key);
+	if (index >= 0) {
+		this.size--;
+		return this.list.splice(index, 1)[0];
+	}
+
+	return undefined;
+};
+
+
+// important that has() doesn't use get() in case an existing key has a falsy value, in which case has() would return false
+Similar.prototype.has = function(key) {
+	var index;
+
+	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
+		return true;
+	}
+
+	index = this.indexOf(key);
+	if (index >= 0) {
+		this.lastItem = this.list[index];
+		return true;
+	}
+
+	return false;
+};
+
+Similar.prototype.forEach = function(callback, thisArg) {
+	var i;
+	for (i = 0; i < this.size; i++) {
+		callback.call(thisArg || this, this.list[i].val, this.list[i].key, this);
+	}
+};
+
+Similar.prototype.indexOf = function(key) {
+	var i;
+	for (i = 0; i < this.size; i++) {
+		if (this.isEqual(this.list[i].key, key)) {
+			return i;
+		}
+	}
+	return -1;
+};
+
+// check if the numbers are equal, or whether they are both precisely NaN (isNaN returns true for all non-numbers)
+Similar.prototype.isEqual = function(val1, val2) {
+	return val1 === val2 || (val1 !== val1 && val2 !== val2);
+};
+
+module.exports = Similar;
+},{}],4:[function(require,module,exports){
+var MapOrSimilar = require('map-or-similar');
+
+module.exports = function (limit) {
+	var cache = new MapOrSimilar(),
+		lru = [];
+
+	return function (fn) {
+		var memoizerific = function () {
+			var currentCache = cache,
+				newMap,
+				fnResult,
+				argsLengthMinusOne = arguments.length - 1,
+				lruPath = Array(argsLengthMinusOne + 1),
+				isMemoized = true,
+				i;
+
+			if ((memoizerific.numArgs || memoizerific.numArgs === 0) && memoizerific.numArgs !== argsLengthMinusOne + 1) {
+				throw new Error('Memoizerific functions should always be called with the same number of arguments');
+			}
+
+			// loop through each argument to traverse the map tree
+			for (i = 0; i < argsLengthMinusOne; i++) {
+				lruPath[i] = {
+					cacheItem: currentCache,
+					arg: arguments[i]
+				};
+
+				// climb through the hierarchical map tree until the second-last argument has been found, or an argument is missing.
+				// if all arguments up to the second-last have been found, this will potentially be a cache hit (determined below)
+				if (currentCache.has(arguments[i])) {
+					currentCache = currentCache.get(arguments[i]);
+					continue;
+				}
+
+				isMemoized = false;
+
+				// make maps until last value
+				newMap = new MapOrSimilar();
+				currentCache.set(arguments[i], newMap);
+				currentCache = newMap;
+			}
+
+			// we are at the last arg, check if it is really memoized
+			if (isMemoized) {
+				if (currentCache.has(arguments[argsLengthMinusOne])) {
+					fnResult = currentCache.get(arguments[argsLengthMinusOne]);
+				}
+				else {
+					isMemoized = false;
+				}
+			}
+
+			if (!isMemoized) {
+				fnResult = fn.apply(null, arguments);
+				currentCache.set(arguments[argsLengthMinusOne], fnResult);
+			}
+
+			if (limit > 0) {
+				lruPath[argsLengthMinusOne] = {
+					cacheItem: currentCache,
+					arg: arguments[argsLengthMinusOne]
+				};
+
+				if (isMemoized) {
+					moveToMostRecentLru(lru, lruPath);
+				}
+				else {
+					lru.push(lruPath);
+				}
+
+				if (lru.length > limit) {
+					removeCachedResult(lru.shift());
+				}
+			}
+
+			memoizerific.wasMemoized = isMemoized;
+			memoizerific.numArgs = argsLengthMinusOne + 1;
+
+			return fnResult;
+		};
+
+		memoizerific.limit = limit;
+		memoizerific.wasMemoized = false;
+		memoizerific.cache = cache;
+		memoizerific.lru = lru;
+
+		return memoizerific;
+	};
+};
+
+// move current args to most recent position
+function moveToMostRecentLru(lru, lruPath) {
+	var lruLen = lru.length,
+		lruPathLen = lruPath.length,
+		isMatch,
+		i, ii;
+
+	for (i = 0; i < lruLen; i++) {
+		isMatch = true;
+		for (ii = 0; ii < lruPathLen; ii++) {
+			if (!isEqual(lru[i][ii].arg, lruPath[ii].arg)) {
+				isMatch = false;
+				break;
+			}
+		}
+		if (isMatch) {
+			break;
+		}
+	}
+
+	lru.push(lru.splice(i, 1)[0]);
+}
+
+// remove least recently used cache item and all dead branches
+function removeCachedResult(removedLru) {
+	var removedLruLen = removedLru.length,
+		currentLru = removedLru[removedLruLen - 1],
+		tmp,
+		i;
+
+	currentLru.cacheItem.delete(currentLru.arg);
+
+	// walk down the tree removing dead branches (size 0) along the way
+	for (i = removedLruLen - 2; i >= 0; i--) {
+		currentLru = removedLru[i];
+		tmp = currentLru.cacheItem.get(currentLru.arg);
+
+		if (!tmp || !tmp.size) {
+			currentLru.cacheItem.delete(currentLru.arg);
+		} else {
+			break;
+		}
+	}
+}
+
+// check if the numbers are equal, or whether they are both precisely NaN (isNaN returns true for all non-numbers)
+function isEqual(val1, val2) {
+	return val1 === val2 || (val1 !== val1 && val2 !== val2);
+}
+},{"map-or-similar":2}],5:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -180,274 +445,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],2:[function(require,module,exports){
-module.exports = function(selectors, getState, ...args) {
-	return Object.keys(selectors).reduce((p, selectorKey) => {
-		Object.defineProperty(p, selectorKey, {
-			get: function() { return selectors[selectorKey](getState(), ...args) },
-			enumerable: true
-		});
-		return p;
-	}, {});
-};
-
-},{}],3:[function(require,module,exports){
-(function (process){
-if (typeof Map !== 'function' || (process && process.env && process.env.TEST_MAPORSIMILAR === 'true')) {
-	module.exports = require('./similar');
-}
-else {
-	module.exports = Map;
-}
-}).call(this,require('_process'))
-
-},{"./similar":4,"_process":1}],4:[function(require,module,exports){
-function Similar() {
-	this.list = [];
-	this.lastItem = undefined;
-	this.size = 0;
-
-	return this;
-}
-
-Similar.prototype.get = function(key) {
-	var index;
-
-	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
-		return this.lastItem.val;
-	}
-
-	index = this.indexOf(key);
-	if (index >= 0) {
-		this.lastItem = this.list[index];
-		return this.list[index].val;
-	}
-
-	return undefined;
-};
-
-Similar.prototype.set = function(key, val) {
-	var index;
-
-	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
-		this.lastItem.val = val;
-		return this;
-	}
-
-	index = this.indexOf(key);
-	if (index >= 0) {
-		this.lastItem = this.list[index];
-		this.list[index].val = val;
-		return this;
-	}
-
-	this.lastItem = { key: key, val: val };
-	this.list.push(this.lastItem);
-	this.size++;
-
-	return this;
-};
-
-Similar.prototype.delete = function(key) {
-	var index;
-
-	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
-		this.lastItem = undefined;
-	}
-
-	index = this.indexOf(key);
-	if (index >= 0) {
-		this.size--;
-		return this.list.splice(index, 1)[0];
-	}
-
-	return undefined;
-};
-
-
-// important that has() doesn't use get() in case an existing key has a falsy value, in which case has() would return false
-Similar.prototype.has = function(key) {
-	var index;
-
-	if (this.lastItem && this.isEqual(this.lastItem.key, key)) {
-		return true;
-	}
-
-	index = this.indexOf(key);
-	if (index >= 0) {
-		this.lastItem = this.list[index];
-		return true;
-	}
-
-	return false;
-};
-
-Similar.prototype.forEach = function(callback, thisArg) {
-	var i;
-	for (i = 0; i < this.size; i++) {
-		callback.call(thisArg || this, this.list[i].val, this.list[i].key, this);
-	}
-};
-
-Similar.prototype.indexOf = function(key) {
-	var i;
-	for (i = 0; i < this.size; i++) {
-		if (this.isEqual(this.list[i].key, key)) {
-			return i;
-		}
-	}
-	return -1;
-};
-
-// check if the numbers are equal, or whether they are both precisely NaN (isNaN returns true for all non-numbers)
-Similar.prototype.isEqual = function(val1, val2) {
-	return val1 === val2 || (val1 !== val1 && val2 !== val2);
-};
-
-module.exports = Similar;
-},{}],5:[function(require,module,exports){
-var MapOrSimilar = require('map-or-similar');
-
-module.exports = function (limit) {
-	var cache = new MapOrSimilar(),
-		lru = [];
-
-	return function (fn) {
-		var memoizerific = function () {
-			var currentCache = cache,
-				newMap,
-				fnResult,
-				argsLengthMinusOne = arguments.length - 1,
-				lruPath = Array(argsLengthMinusOne + 1),
-				isMemoized = true,
-				i;
-
-			if ((memoizerific.numArgs || memoizerific.numArgs === 0) && memoizerific.numArgs !== argsLengthMinusOne + 1) {
-				throw new Error('Memoizerific functions should always be called with the same number of arguments');
-			}
-
-			// loop through each argument to traverse the map tree
-			for (i = 0; i < argsLengthMinusOne; i++) {
-				lruPath[i] = {
-					cacheItem: currentCache,
-					arg: arguments[i]
-				};
-
-				// climb through the hierarchical map tree until the second-last argument has been found, or an argument is missing.
-				// if all arguments up to the second-last have been found, this will potentially be a cache hit (determined below)
-				if (currentCache.has(arguments[i])) {
-					currentCache = currentCache.get(arguments[i]);
-					continue;
-				}
-
-				isMemoized = false;
-
-				// make maps until last value
-				newMap = new MapOrSimilar();
-				currentCache.set(arguments[i], newMap);
-				currentCache = newMap;
-			}
-
-			// we are at the last arg, check if it is really memoized
-			if (isMemoized) {
-				if (currentCache.has(arguments[argsLengthMinusOne])) {
-					fnResult = currentCache.get(arguments[argsLengthMinusOne]);
-				}
-				else {
-					isMemoized = false;
-				}
-			}
-
-			if (!isMemoized) {
-				fnResult = fn.apply(null, arguments);
-				currentCache.set(arguments[argsLengthMinusOne], fnResult);
-			}
-
-			if (limit > 0) {
-				lruPath[argsLengthMinusOne] = {
-					cacheItem: currentCache,
-					arg: arguments[argsLengthMinusOne]
-				};
-
-				if (isMemoized) {
-					moveToMostRecentLru(lru, lruPath);
-				}
-				else {
-					lru.push(lruPath);
-				}
-
-				if (lru.length > limit) {
-					removeCachedResult(lru.shift());
-				}
-			}
-
-			memoizerific.wasMemoized = isMemoized;
-			memoizerific.numArgs = argsLengthMinusOne + 1;
-
-			return fnResult;
-		};
-
-		memoizerific.limit = limit;
-		memoizerific.wasMemoized = false;
-		memoizerific.cache = cache;
-		memoizerific.lru = lru;
-
-		return memoizerific;
-	};
-};
-
-// move current args to most recent position
-function moveToMostRecentLru(lru, lruPath) {
-	var lruLen = lru.length,
-		lruPathLen = lruPath.length,
-		isMatch,
-		i, ii;
-
-	for (i = 0; i < lruLen; i++) {
-		isMatch = true;
-		for (ii = 0; ii < lruPathLen; ii++) {
-			if (!isEqual(lru[i][ii].arg, lruPath[ii].arg)) {
-				isMatch = false;
-				break;
-			}
-		}
-		if (isMatch) {
-			break;
-		}
-	}
-
-	lru.push(lru.splice(i, 1)[0]);
-}
-
-// remove least recently used cache item and all dead branches
-function removeCachedResult(removedLru) {
-	var removedLruLen = removedLru.length,
-		currentLru = removedLru[removedLruLen - 1],
-		tmp,
-		i;
-
-	currentLru.cacheItem.delete(currentLru.arg);
-
-	// walk down the tree removing dead branches (size 0) along the way
-	for (i = removedLruLen - 2; i >= 0; i--) {
-		currentLru = removedLru[i];
-		tmp = currentLru.cacheItem.get(currentLru.arg);
-
-		if (!tmp || !tmp.size) {
-			currentLru.cacheItem.delete(currentLru.arg);
-		} else {
-			break;
-		}
-	}
-}
-
-// check if the numbers are equal, or whether they are both precisely NaN (isNaN returns true for all non-numbers)
-function isEqual(val1, val2) {
-	return val1 === val2 || (val1 !== val1 && val2 !== val2);
-}
-},{"map-or-similar":3}],6:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.todoReactComponents=e()}}(function(){var e;return function e(t,n,a){function o(r,s){if(!n[r]){if(!t[r]){var u="function"==typeof require&&require;if(!s&&u)return u(r,!0);if(l)return l(r,!0);var c=new Error("Cannot find module '"+r+"'");throw c.code="MODULE_NOT_FOUND",c}var i=n[r]={exports:{}};t[r][0].call(i.exports,function(e){var n=t[r][1][e];return o(n?n:e)},i,i.exports,e,t,n,a)}return n[r].exports}for(var l="function"==typeof require&&require,r=0;r<a.length;r++)o(a[r]);return o}({1:[function(t,n){!function(){"use strict";function t(){for(var e=[],n=0;n<arguments.length;n++){var o=arguments[n];if(o){var l=typeof o;if("string"===l||"number"===l)e.push(o);else if(Array.isArray(o))e.push(t.apply(null,o));else if("object"===l)for(var r in o)a.call(o,r)&&o[r]&&e.push(r)}}return e.join(" ")}var a={}.hasOwnProperty;"undefined"!=typeof n&&n.exports?n.exports=t:"function"==typeof e&&"object"==typeof e.amd&&e.amd?e("classnames",[],function(){return t}):window.classNames=t}()},{}],2:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=a(o),r=e("classnames"),s=a(r),u=e("../site/site-header"),c=a(u),i=function(e){return l.default.createElement("div",null,l.default.createElement(c.default,e.siteHeader),l.default.createElement("main",{className:s.default("page",e.className)},l.default.createElement("p",null,"Read the article: ",l.default.createElement("a",{href:"http://www.thinkloop.com/article/extreme-decoupling-react-redux-selectors",target:"_blank"},"Extreme Decoupling React Redux Selectors")),l.default.createElement("p",null,"See the code on github:"),l.default.createElement("ul",null,l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-app",target:"_blank"},l.default.createElement("strong",null,"integration"),": selectors")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-react-components",target:"_blank"},l.default.createElement("strong",null,"view"),": react components")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-redux-state",target:"_blank"},l.default.createElement("strong",null,"state"),": redux container")))))};i.propTypes={className:l.default.PropTypes.string,siteHeader:l.default.PropTypes.object},n.default=i},{"../site/site-header":6,classnames:1}],3:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function l(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function r(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(n,"__esModule",{value:!0});var s=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e},u=function(){function e(e,t){for(var n=0;n<t.length;n++){var a=t[n];a.enumerable=a.enumerable||!1,a.configurable=!0,"value"in a&&(a.writable=!0),Object.defineProperty(e,a.key,a)}}return function(t,n,a){return n&&e(t.prototype,n),a&&e(t,a),t}}(),c="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,i=a(c),d=function(e){function t(e){o(this,t);var n=l(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return n.handleClick=function(e){n.props.target||n.props.href&&0===n.props.href.indexOf("mailto:")||0===!e.button||e.metaKey||e.altKey||e.ctrlKey||e.shiftKey||(e.preventDefault(),n.props.onClick&&n.props.onClick(n.props.href))},n.handleClick=n.handleClick.bind(n),n}return r(t,e),u(t,[{key:"render",value:function(){return i.default.createElement("a",s({},this.props,{href:this.props.href,className:"link "+this.props.className,onClick:this.handleClick}))}}]),t}(c.Component);d.propTypes={className:c.PropTypes.string,href:c.PropTypes.string,target:c.PropTypes.string,onClick:c.PropTypes.func},n.default=d},{}],4:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e};n.default=function(e,t){var n=void 0;switch(e.url!==window.location.pathname+window.location.search&&window.history.pushState(null,null,e.url),e.selectedPage){case u.ABOUT:n=r.default.createElement(f.default,{className:"about-page",siteHeader:e.siteHeader});break;default:n=r.default.createElement(i.default,o({className:"todos-page"},e.todos,{siteHeader:e.siteHeader}))}s.render(n,t)};var l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,r=a(l),s="undefined"!=typeof window?window.ReactDOM:"undefined"!=typeof global?global.ReactDOM:null,u=e("./site/constants/pages"),c=e("./todos/todos-page"),i=a(c),d=e("./about/about-page"),f=a(d)},{"./about/about-page":2,"./site/constants/pages":5,"./todos/todos-page":12}],5:[function(e,t,n){"use strict";Object.defineProperty(n,"__esModule",{value:!0});n.HOME="HOME",n.ABOUT="ABOUT"},{}],6:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=a(o),r=e("classnames"),s=a(r),u=e("../site/constants/pages"),c=e("../common/link"),i=a(c),d=function(e){return l.default.createElement("header",{className:s.default("site-header",e.className)},l.default.createElement("nav",null,l.default.createElement(i.default,{className:s.default({selected:e.selectedPage===u.HOME}),href:e.hrefHome,onClick:e.onClickHome},e.labelHome),l.default.createElement(i.default,{className:s.default({selected:e.selectedPage===u.ABOUT}),href:e.hrefAbout,onClick:e.onClickAbout},e.labelAbout)))};d.propTypes={className:l.default.PropTypes.string,selectedPage:l.default.PropTypes.string,labelHome:l.default.PropTypes.string,labelAbout:l.default.PropTypes.string,hrefHome:l.default.PropTypes.string,hrefAbout:l.default.PropTypes.string,onClickHome:l.default.PropTypes.func,onClickAbout:l.default.PropTypes.func},n.default=d},{"../common/link":3,"../site/constants/pages":5,classnames:1}],7:[function(e,t,n){"use strict";function a(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function o(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0}),n.constants=n.render=void 0;var l=e("./render"),r=o(l),s=e("./site/constants/pages"),u=a(s),c=e("./todos/constants/statuses"),i=a(c),d={PAGES:u,TODO_STATUSES:i};n.default={render:r.default,constants:d},n.render=r.default,n.constants=d},{"./render":4,"./site/constants/pages":5,"./todos/constants/statuses":8}],8:[function(e,t,n){"use strict";Object.defineProperty(n,"__esModule",{value:!0});n.PENDING="PENDING",n.COMPLETE="COMPLETE",n.TOTAL="TOTAL"},{}],9:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=a(o),r=e("classnames"),s=a(r),u=function(e){return l.default.createElement("article",{className:s.default("list-item",{checked:e.isComplete},e.className)},l.default.createElement("label",{className:"description"},l.default.createElement("input",{className:"checkbox",type:"checkbox",checked:e.isComplete,onChange:e.onCheckboxToggled}),e.description),l.default.createElement("button",{className:"button",onClick:e.onButtonClicked},e.buttonLabel))};u.propTypes={className:l.default.PropTypes.string,description:l.default.PropTypes.string,isComplete:l.default.PropTypes.bool,buttonLabel:l.default.PropTypes.string,onButtonClicked:l.default.PropTypes.func,onCheckboxToggled:l.default.PropTypes.func},n.default=u},{classnames:1}],10:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,r=a(l),s=e("classnames"),u=a(s),c=e("../todos/todo-item"),i=a(c),d=function(e){return r.default.createElement("section",{className:u.default("list",e.className)},!!e.todos&&e.todos.map(function(e){return r.default.createElement(i.default,o({key:e.id},e))}))};d.propTypes={className:r.default.PropTypes.string,todos:r.default.PropTypes.array},n.default=d},{"../todos/todo-item":9,classnames:1}],11:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function l(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function r(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(n,"__esModule",{value:!0});var s=function(){function e(e,t){for(var n=0;n<t.length;n++){var a=t[n];a.enumerable=a.enumerable||!1,a.configurable=!0,"value"in a&&(a.writable=!0),Object.defineProperty(e,a.key,a)}}return function(t,n,a){return n&&e(t.prototype,n),a&&e(t,a),t}}(),u="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,c=a(u),i=e("classnames"),d=a(i),f=function(e){function t(e){o(this,t);var n=l(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return n.handleOnChange=function(e){n.setState({value:e.target.value})},n.handleOnSubmit=function(e){e.preventDefault(),n.setState({value:""}),n.props.onSubmit(n.state.value)},n.state={value:n.props.value||""},n.handleOnChange=n.handleOnChange.bind(n),n.handleOnSubmit=n.handleOnSubmit.bind(n),n}return r(t,e),s(t,[{key:"render",value:function(){var e=this.props,t=this.state;return c.default.createElement("form",{className:d.default(e.className),onSubmit:this.handleOnSubmit},c.default.createElement("input",{className:"todos-new-form-input",value:t.value,placeholder:e.placeholder,onChange:this.handleOnChange}))}}]),t}(u.Component);f.propTypes={className:c.default.PropTypes.string,placeholder:c.default.PropTypes.string,onSubmit:c.default.PropTypes.func},n.default=f},{classnames:1}],12:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,r=a(l),s=e("classnames"),u=a(s),c=e("../site/site-header"),i=a(c),d=e("../todos/todos-new-form"),f=a(d),p=e("../todos/todos-list"),m=a(p),y=e("../todos/todos-summary"),b=a(y),g=function(e){return r.default.createElement("div",null,r.default.createElement(i.default,e.siteHeader),r.default.createElement("main",{className:u.default("page",e.className)},!!e.newForm&&r.default.createElement(f.default,o({className:"todos-new-form"},e.newForm)),!!e.list&&r.default.createElement(m.default,{className:"todos-list",todos:e.list}),!!e.summary&&r.default.createElement(b.default,o({className:"todos-summary"},e.summary))))};g.propTypes={className:r.default.PropTypes.string,siteHeader:r.default.PropTypes.object,newForm:r.default.PropTypes.object,list:r.default.PropTypes.array,summary:r.default.PropTypes.object},n.default=g},{"../site/site-header":6,"../todos/todos-list":10,"../todos/todos-new-form":11,"../todos/todos-summary":13,classnames:1}],13:[function(e,t,n){"use strict";function a(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(n,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=a(o),r=e("classnames"),s=a(r),u=e("../todos/constants/statuses"),c=function(e){return l.default.createElement("section",{className:s.default("todo-summary",e.className)},l.default.createElement("span",{className:s.default("todo-summary-pending",{"is-selected":e.selectedSummaryStatus===u.PENDING}),onClick:e.onClickPending},e.countIncomplete),l.default.createElement("span",{className:s.default("todo-summary-complete",{"is-selected":e.selectedSummaryStatus===u.COMPLETE}),onClick:e.onClickComplete},e.countComplete),l.default.createElement("span",{className:s.default("todo-summary-total",{"is-selected":e.selectedSummaryStatus===u.TOTAL}),onClick:e.onClickTotal},e.countTotal))};c.propTypes={className:l.default.PropTypes.string,countIncomplete:l.default.PropTypes.string,countComplete:l.default.PropTypes.string,countTotal:l.default.PropTypes.string,selectedSummaryStatus:l.default.PropTypes.oneOf([u.PENDING,u.COMPLETE,u.TOTAL]),onClickPending:l.default.PropTypes.func,onClickComplete:l.default.PropTypes.func,onClickTotal:l.default.PropTypes.func},n.default=c},{"../todos/constants/statuses":8,classnames:1}]},{},[7])(7)});
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.todoReactComponents=e()}}(function(){var e;return function e(t,a,n){function o(s,r){if(!a[s]){if(!t[s]){var u="function"==typeof require&&require;if(!r&&u)return u(s,!0);if(l)return l(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var d=a[s]={exports:{}};t[s][0].call(d.exports,function(e){var a=t[s][1][e];return o(a?a:e)},d,d.exports,e,t,a,n)}return a[s].exports}for(var l="function"==typeof require&&require,s=0;s<n.length;s++)o(n[s]);return o}({1:[function(t,a){!function(){"use strict";function t(){for(var e=[],a=0;a<arguments.length;a++){var o=arguments[a];if(o){var l=typeof o;if("string"===l||"number"===l)e.push(o);else if(Array.isArray(o))e.push(t.apply(null,o));else if("object"===l)for(var s in o)n.call(o,s)&&o[s]&&e.push(s)}}return e.join(" ")}var n={}.hasOwnProperty;"undefined"!=typeof a&&a.exports?a.exports=t:"function"==typeof e&&"object"==typeof e.amd&&e.amd?e("classnames",[],function(){return t}):window.classNames=t}()},{}],2:[function(e,t){t.exports=React.createClass({propTypes:{className:React.PropTypes.string,href:React.PropTypes.string,target:React.PropTypes.string,onClick:React.PropTypes.func},handleClick:function(e){this.props.target||this.props.href&&0===this.props.href.indexOf("mailto:")||0===!e.button||e.metaKey||e.altKey||e.ctrlKey||e.shiftKey||(e.preventDefault(),this.props.onClick&&this.props.onClick(this.props.href))},render:function(){return React.createElement("a",Object.assign({},this.props,{href:this.props.href,className:"link "+this.props.className,onClick:this.handleClick}))}})},{}],3:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../site/site-header"),c=n(u),d=function(e){return l.default.createElement("div",null,l.default.createElement(c.default,e.siteHeader),l.default.createElement("main",{className:r.default("page",e.className)},l.default.createElement("p",null,"Read the article: ",l.default.createElement("a",{href:"http://www.thinkloop.com/article/extreme-decoupling-react-redux-selectors",target:"_blank"},"Extreme Decoupling React Redux Selectors")),l.default.createElement("p",null,"See the code on github:"),l.default.createElement("ul",null,l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-app",target:"_blank"},l.default.createElement("strong",null,"integration"),": selectors")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-react-components",target:"_blank"},l.default.createElement("strong",null,"view"),": react components")),l.default.createElement("li",null,l.default.createElement("a",{href:"https://github.com/thinkloop/todo-redux-state",target:"_blank"},l.default.createElement("strong",null,"state"),": redux container")))))};d.propTypes={className:l.default.PropTypes.string,siteHeader:l.default.PropTypes.object},a.default=d},{"../site/site-header":6,classnames:1}],4:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e};a.default=function(e,t){var a=void 0;switch(e.url!==window.location.pathname+window.location.search&&window.history.pushState(null,null,e.url),e.selectedPage){case u.ABOUT:a=s.default.createElement(f.default,{className:"about-page",siteHeader:e.siteHeader});break;default:a=s.default.createElement(d.default,o({className:"todos-page"},e.todos,{siteHeader:e.siteHeader}))}r.render(a,t)};var l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r="undefined"!=typeof window?window.ReactDOM:"undefined"!=typeof global?global.ReactDOM:null,u=e("./site/constants/pages"),c=e("./todos/todos-page"),d=n(c),i=e("./about/about-page"),f=n(i)},{"./about/about-page":3,"./site/constants/pages":5,"./todos/todos-page":12}],5:[function(e,t,a){"use strict";Object.defineProperty(a,"__esModule",{value:!0});a.HOME="HOME",a.ABOUT="ABOUT"},{}],6:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../site/constants/pages"),c=e("link-react"),d=n(c),i=function(e){return l.default.createElement("header",{className:r.default("site-header",e.className)},l.default.createElement("nav",null,l.default.createElement(d.default,{className:r.default({selected:e.selectedPage===u.HOME}),href:e.hrefHome,onClick:e.onClickHome},e.labelHome),l.default.createElement(d.default,{className:r.default({selected:e.selectedPage===u.ABOUT}),href:e.hrefAbout,onClick:e.onClickAbout},e.labelAbout)))};i.propTypes={className:l.default.PropTypes.string,selectedPage:l.default.PropTypes.string,labelHome:l.default.PropTypes.string,labelAbout:l.default.PropTypes.string,hrefHome:l.default.PropTypes.string,hrefAbout:l.default.PropTypes.string,onClickHome:l.default.PropTypes.func,onClickAbout:l.default.PropTypes.func},a.default=i},{"../site/constants/pages":5,classnames:1,"link-react":2}],7:[function(e,t,a){"use strict";function n(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var a in e)Object.prototype.hasOwnProperty.call(e,a)&&(t[a]=e[a]);return t.default=e,t}function o(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0}),a.constants=a.render=void 0;var l=e("./render"),s=o(l),r=e("./site/constants/pages"),u=n(r),c=e("./todos/constants/statuses"),d=n(c),i={PAGES:u,TODO_STATUSES:d};a.default={render:s.default,constants:i},a.render=s.default,a.constants=i},{"./render":4,"./site/constants/pages":5,"./todos/constants/statuses":8}],8:[function(e,t,a){"use strict";Object.defineProperty(a,"__esModule",{value:!0});a.PENDING="PENDING",a.COMPLETE="COMPLETE",a.TOTAL="TOTAL"},{}],9:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=function(e){return l.default.createElement("article",{className:r.default("list-item",{checked:e.isComplete},e.className)},l.default.createElement("label",{className:"description"},l.default.createElement("input",{className:"checkbox",type:"checkbox",checked:e.isComplete,onChange:e.onCheckboxToggled}),e.description),l.default.createElement("button",{className:"button",onClick:e.onButtonClicked},e.buttonLabel))};u.propTypes={className:l.default.PropTypes.string,description:l.default.PropTypes.string,isComplete:l.default.PropTypes.bool,buttonLabel:l.default.PropTypes.string,onButtonClicked:l.default.PropTypes.func,onCheckboxToggled:l.default.PropTypes.func},a.default=u},{classnames:1}],10:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r=e("classnames"),u=n(r),c=e("../todos/todo-item"),d=n(c),i=function(e){return s.default.createElement("section",{className:u.default("list",e.className)},!!e.todos&&e.todos.map(function(e){return s.default.createElement(d.default,o({key:e.id},e))}))};i.propTypes={className:s.default.PropTypes.string,todos:s.default.PropTypes.array},a.default=i},{"../todos/todo-item":9,classnames:1}],11:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function l(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(a,"__esModule",{value:!0});var r=function(){function e(e,t){for(var a=0;a<t.length;a++){var n=t[a];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,a,n){return a&&e(t.prototype,a),n&&e(t,n),t}}(),u="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,c=n(u),d=e("classnames"),i=n(d),f=function(e){function t(e){o(this,t);var a=l(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return a.handleOnChange=function(e){a.setState({value:e.target.value})},a.handleOnSubmit=function(e){e.preventDefault(),a.setState({value:""}),a.props.onSubmit(a.state.value)},a.state={value:a.props.value||""},a.handleOnChange=a.handleOnChange.bind(a),a.handleOnSubmit=a.handleOnSubmit.bind(a),a}return s(t,e),r(t,[{key:"render",value:function(){var e=this.props,t=this.state;return c.default.createElement("form",{className:i.default(e.className),onSubmit:this.handleOnSubmit},c.default.createElement("input",{className:"todos-new-form-input",value:t.value,placeholder:e.placeholder,onChange:this.handleOnChange}))}}]),t}(u.Component);f.propTypes={className:c.default.PropTypes.string,placeholder:c.default.PropTypes.string,onSubmit:c.default.PropTypes.func},a.default=f},{classnames:1}],12:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n])}return e},l="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,s=n(l),r=e("classnames"),u=n(r),c=e("../site/site-header"),d=n(c),i=e("../todos/todos-new-form"),f=n(i),p=e("../todos/todos-list"),m=n(p),y=e("../todos/todos-summary"),g=n(y),b=function(e){return s.default.createElement("div",null,s.default.createElement(d.default,e.siteHeader),s.default.createElement("main",{className:u.default("page",e.className)},!!e.newForm&&s.default.createElement(f.default,o({className:"todos-new-form"},e.newForm)),!!e.list&&s.default.createElement(m.default,{className:"todos-list",todos:e.list}),!!e.summary&&s.default.createElement(g.default,o({className:"todos-summary"},e.summary))))};b.propTypes={className:s.default.PropTypes.string,siteHeader:s.default.PropTypes.object,newForm:s.default.PropTypes.object,list:s.default.PropTypes.array,summary:s.default.PropTypes.object},a.default=b},{"../site/site-header":6,"../todos/todos-list":10,"../todos/todos-new-form":11,"../todos/todos-summary":13,classnames:1}],13:[function(e,t,a){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(a,"__esModule",{value:!0});var o="undefined"!=typeof window?window.React:"undefined"!=typeof global?global.React:null,l=n(o),s=e("classnames"),r=n(s),u=e("../todos/constants/statuses"),c=function(e){return l.default.createElement("section",{className:r.default("todo-summary",e.className)},l.default.createElement("span",{className:r.default("todo-summary-pending",{"is-selected":e.selectedSummaryStatus===u.PENDING}),onClick:e.onClickPending},e.countIncomplete),l.default.createElement("span",{className:r.default("todo-summary-complete",{"is-selected":e.selectedSummaryStatus===u.COMPLETE}),onClick:e.onClickComplete},e.countComplete),l.default.createElement("span",{className:r.default("todo-summary-total",{"is-selected":e.selectedSummaryStatus===u.TOTAL}),onClick:e.onClickTotal},e.countTotal))};c.propTypes={className:l.default.PropTypes.string,countIncomplete:l.default.PropTypes.string,countComplete:l.default.PropTypes.string,countTotal:l.default.PropTypes.string,selectedSummaryStatus:l.default.PropTypes.oneOf([u.PENDING,u.COMPLETE,u.TOTAL]),onClickPending:l.default.PropTypes.func,onClickComplete:l.default.PropTypes.func,onClickTotal:l.default.PropTypes.func},a.default=c},{"../todos/constants/statuses":8,classnames:1}]},{},[7])(7)});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{}],7:[function(require,module,exports){
@@ -1860,7 +1860,7 @@ exports.default = function (id, todo) {
 });
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":1}],8:[function(require,module,exports){
+},{"_process":5}],8:[function(require,module,exports){
 'use strict';
 
 var _todoReduxState = require('todo-redux-state');
@@ -1936,7 +1936,7 @@ var selectors = {
 
 exports.default = (0, _combineSelectors2.default)(selectors, _todoReduxState.getState);
 
-},{"./site/selected-page":11,"./site/site-header":12,"./site/url":13,"./todos/todos":14,"combine-selectors":2,"todo-redux-state":7}],10:[function(require,module,exports){
+},{"./site/selected-page":11,"./site/site-header":12,"./site/url":13,"./todos/todos":14,"combine-selectors":1,"todo-redux-state":7}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1971,7 +1971,7 @@ var selectSelectedPage = exports.selectSelectedPage = (0, _memoizerific2.default
 	return _todoReactComponents.constants.PAGES[selectedPage];
 });
 
-},{"memoizerific":5,"todo-react-components":6}],12:[function(require,module,exports){
+},{"memoizerific":4,"todo-react-components":6}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2019,7 +2019,7 @@ var selectSiteHeader = exports.selectSiteHeader = (0, _memoizerific2.default)(1)
 	};
 });
 
-},{"../site/constants/paths":10,"memoizerific":5,"todo-redux-state":7}],13:[function(require,module,exports){
+},{"../site/constants/paths":10,"memoizerific":4,"todo-redux-state":7}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2049,7 +2049,7 @@ var selectURL = exports.selectURL = (0, _memoizerific2.default)(1)(function (sel
 	return PATHS[selectedPage];
 });
 
-},{"../site/constants/paths":10,"memoizerific":5}],14:[function(require,module,exports){
+},{"../site/constants/paths":10,"memoizerific":4}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2152,5 +2152,5 @@ var selectTodos = exports.selectTodos = (0, _memoizerific2.default)(1)(function 
 	};
 });
 
-},{"memoizerific":5,"todo-redux-state":7}]},{},[8])
+},{"memoizerific":4,"todo-redux-state":7}]},{},[8])
 //# sourceMappingURL=build.js.map
