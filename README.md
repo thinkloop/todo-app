@@ -20,13 +20,12 @@ To run the full todo app, clone the repo and start the webserver:
 Released under an MIT license.
 
 ## Related
-1. [todo-react-components](https://github.com/thinkloop/todo-react-components) (view-layer)
-2. [todo-redux-state](https://github.com/thinkloop/todo-redux-state) (data-layer)
-3. [todo-app](https://github.com/thinkloop/todo-app) (integration)
+- [todo-react-components](https://github.com/thinkloop/todo-react-components): React components for extreme decoupling todo app example
+- [todo-redux-state](https://github.com/thinkloop/todo-redux-state): Redux state container for extreme decoupling todo app example
 
 ## Other
-- [memoizerific](https://github.com/thinkloop/memoizerific/)
-- [link-react](https://github.com/thinkloop/link-react/)
-- [spa-webserver](https://github.com/thinkloop/spa-webserver/)
+- [memoizerific](https://github.com/thinkloop/memoizerific/): Fast, small, efficient JavaScript memoization to memoize JS functions
+- [link-react](https://github.com/thinkloop/link-react/): A generalized link <a> component that allows client-side navigation while taking into account exceptions
+- [spa-webserver](https://github.com/thinkloop/spa-webserver/): Webserver that redirects to root index.html if path is missing for client-side SPA navigation
 
 ## Like it? Star It
