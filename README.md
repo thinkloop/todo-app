@@ -24,4 +24,9 @@ Released under an MIT license.
 2. [todo-redux-state](https://github.com/thinkloop/todo-redux-state) (data-layer)
 3. [todo-app](https://github.com/thinkloop/todo-app) (integration)
 
+## Other
+- [memoizerific](https://github.com/thinkloop/memoizerific/)
+- [link-react](https://github.com/thinkloop/link-react/)
+- [spa-webserver](https://github.com/thinkloop/spa-webserver/)
+
 ## Like it? Star It
