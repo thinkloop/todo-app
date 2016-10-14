@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "name": "todo-app",
-  "description": "Todo App using redux (todo-redux-state) & react (todo-react-components) ",
+  "description": "Example todo app of extreme decoupling of react, redux and selectors",
   "author": "Baz <baz@thinkloop.com>",
   "license": "MIT",
   "repository": {
