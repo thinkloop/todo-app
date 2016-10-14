@@ -2113,7 +2113,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var selectSiteHeader = exports.selectSiteHeader = (0, _memoizerific2.default)(1)(function (selectedPage) {
-
 	return {
 		selectedPage: selectedPage,
 		homeLink: (0, _home.selectHomeLink)(),

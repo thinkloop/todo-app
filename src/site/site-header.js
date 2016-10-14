@@ -12,7 +12,6 @@ export default function (state) {
 }
 
 export const selectSiteHeader = memoizerific(1)((selectedPage) => {
-
 	return {
 		selectedPage: selectedPage,
 		homeLink: selectHomeLink(),

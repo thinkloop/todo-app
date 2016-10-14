@@ -4,7 +4,7 @@ React, Redux, Selectors ](http://www.thinkloop.com/article/extreme-decoupling-re
 # Todo App: Selectors (Integration)
 This project integrates the [todo view layer](https://github.com/thinkloop/todo-react-components) project and the [todo state container](https://github.com/thinkloop/todo-redux-state) project to create a functional todo app. Its primary task is to take flat, normalized, shallow state provided by the state container, and transform it into the nested, denormalized, hierarchical structures that the view demands. The mechanism by which it does this is called [selectors](https://github.com/thinkloop/selectors).
 
-### Run
+## Run
 
 To run the full todo app, clone the repo and start the webserver:
 
@@ -15,13 +15,13 @@ To run the full todo app, clone the repo and start the webserver:
 // open localhost url
 ```
 
-### License
+## License
 
 Released under an MIT license.
 
-### Related
+## Related
 1. [todo-react-components](https://github.com/thinkloop/todo-react-components) (view-layer)
 2. [todo-redux-state](https://github.com/thinkloop/todo-redux-state) (data-layer)
 3. [todo-app](https://github.com/thinkloop/todo-app) (integration)
 
-### Like it? Star It
+## Like it? Star It

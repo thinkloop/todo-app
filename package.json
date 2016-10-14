@@ -21,7 +21,7 @@
   "main": "./build/index.html",
   "scripts": {
     "************": "",
-    "start": "augur-ui-webserver -d $npm_package_config_build_folder",
+    "start": "spa-webserver -d $npm_package_config_build_folder",
     "watch": "clear; echo '* NPM UPDATE *'; npm update; echo '* CLEAN * HTML * WATCHIFY *'; NODE_ENV=development npm run -s watch:all",
     "test": "clear; echo '* NPM UPDATE *'; npm update; echo '**** TESTS ****'; jest",
     "***********": "",
@@ -41,7 +41,6 @@
     "todo-redux-state": "thinkloop/todo-redux-state"
   },
   "devDependencies": {
-    "augur-ui-webserver": "^1.1.0",
     "babel-jest": "^16.0.0",
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-stage-0": "6.16.0",
@@ -52,6 +51,7 @@
     "npm-check-updates": "^2.8.2",
     "onchange": "^3.0.2",
     "rimraf": "^2.5.4",
+    "spa-webserver": "^1.0.5",
     "uglifyjs": "^2.4.10",
     "watchify": "^3.7.0"
   },
